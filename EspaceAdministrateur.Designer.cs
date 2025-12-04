@@ -77,6 +77,7 @@
             this.BtnConnexion.TabIndex = 4;
             this.BtnConnexion.Text = "Connexion";
             this.BtnConnexion.UseVisualStyleBackColor = true;
+            this.BtnConnexion.Click += new System.EventHandler(this.BtnConnexion_Click);
             // 
             // BtnCompte
             // 
@@ -86,6 +87,7 @@
             this.BtnCompte.TabIndex = 5;
             this.BtnCompte.Text = "Créer un compte";
             this.BtnCompte.UseVisualStyleBackColor = true;
+            this.BtnCompte.Click += new System.EventHandler(this.BtnCompte_Click);
             // 
             // EspaceAdministrateur
             // 

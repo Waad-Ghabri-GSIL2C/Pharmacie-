@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Projet_Pharmacie
@@ -17,6 +10,23 @@ namespace Projet_Pharmacie
             InitializeComponent();
         }
 
+        private void btn_Gestioncomptes_Click(object sender, EventArgs e)
+        {
+            GestionComptes formGestionComptes = new GestionComptes();
+            formGestionComptes.ShowDialog();
+        }
+
+        private void btn_Gestionstock_Click(object sender, EventArgs e)
+        {
+            GestionStock formGestionStock = new GestionStock();
+            formGestionStock.ShowDialog();
+        }
+
+        private void btn_Gestionfournisseurs_Click(object sender, EventArgs e)
+        {
+            GestionFournisseurs formGestionFournisseurs = new GestionFournisseurs();
+            formGestionFournisseurs.ShowDialog();
+        }
         private void CompteAdministrateur_Load(object sender, EventArgs e)
         {
 

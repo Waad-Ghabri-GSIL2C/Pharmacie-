@@ -52,8 +52,8 @@ namespace Projet_Pharmacie
                            MessageBoxIcon.Information);
 
 
-            CompteAdministrateur compteAdministrateur = new CompteAdministrateur();
-            compteAdministrateur.Show();
+            EspaceAdministrateur espaceAdministrateur = new EspaceAdministrateur();
+            espaceAdministrateur.Show();
 
 
             this.Close();

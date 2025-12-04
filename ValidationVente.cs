@@ -8,21 +8,15 @@ namespace Projet_Pharmacie
 {
     public partial class ValidationVente : Form
     {
-        private List<Produit> produitsStock;
-
         public ValidationVente()
         {
             InitializeComponent();
-
-            // Récupérer la liste des produits en stock depuis ComptePharmacien
-            // (vous devrez passer cette liste en paramètre ou la rendre statique)
         }
 
         private void ValidationVente_Load(object sender, EventArgs e)
         {
             try
             {
-                // Vérifier si la liste de vente contient des produits
                 if (ListeVente.ProduitsVente.Count == 0)
                 {
                     MessageBox.Show("La liste de vente est vide!", "Information",
@@ -31,10 +25,7 @@ namespace Projet_Pharmacie
                     return;
                 }
 
-                // Charger les produits dans le DataGridView
                 ChargerListeVente();
-
-                // Calculer et afficher le prix total
                 CalculerPrixTotal();
             }
             catch (Exception ex)
@@ -48,99 +39,14 @@ namespace Projet_Pharmacie
         {
             try
             {
-                // Configuration du DataGridView
                 dgvListeVente.AutoGenerateColumns = true;
-                dgvListeVente.AllowUserToAddRows = false;
-                dgvListeVente.AllowUserToDeleteRows = false;
-                dgvListeVente.ReadOnly = true;
-                dgvListeVente.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                dgvListeVente.MultiSelect = false;
-                dgvListeVente.BackgroundColor = System.Drawing.Color.White;
-
-                // Style des en-têtes
-                dgvListeVente.EnableHeadersVisualStyles = false;
-                dgvListeVente.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(41, 128, 185);
-                dgvListeVente.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White;
-                dgvListeVente.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-                dgvListeVente.ColumnHeadersHeight = 35;
-
-                // Style des lignes
-                dgvListeVente.RowsDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9F);
-                dgvListeVente.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(240, 240, 240);
-                dgvListeVente.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(52, 152, 219);
-                dgvListeVente.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
-                dgvListeVente.RowTemplate.Height = 30;
-
-                // Lier les données
                 dgvListeVente.DataSource = null;
                 dgvListeVente.DataSource = new System.ComponentModel.BindingList<Produit>(ListeVente.ProduitsVente);
-
-                // Personnaliser les colonnes
-                PersonnaliserColonnes();
+                dgvListeVente.Refresh();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Erreur lors du chargement de la liste : {ex.Message}",
-                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void PersonnaliserColonnes()
-        {
-            try
-            {
-                if (dgvListeVente.Columns.Count > 0)
-                {
-                    // Référence
-                    if (dgvListeVente.Columns["Reference"] != null)
-                    {
-                        dgvListeVente.Columns["Reference"].HeaderText = "Référence";
-                        dgvListeVente.Columns["Reference"].Width = 100;
-                    }
-
-                    // Type
-                    if (dgvListeVente.Columns["TypeProduit"] != null)
-                    {
-                        dgvListeVente.Columns["TypeProduit"].HeaderText = "Type";
-                        dgvListeVente.Columns["TypeProduit"].Width = 120;
-                    }
-
-                    // Nom
-                    if (dgvListeVente.Columns["NomProduit"] != null)
-                    {
-                        dgvListeVente.Columns["NomProduit"].HeaderText = "Nom du produit";
-                        dgvListeVente.Columns["NomProduit"].Width = 250;
-                    }
-
-                    // Quantité
-                    if (dgvListeVente.Columns["Quantite"] != null)
-                    {
-                        dgvListeVente.Columns["Quantite"].HeaderText = "Quantité";
-                        dgvListeVente.Columns["Quantite"].Width = 100;
-                        dgvListeVente.Columns["Quantite"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    }
-
-                    // Prix unitaire
-                    if (dgvListeVente.Columns["Prix"] != null)
-                    {
-                        dgvListeVente.Columns["Prix"].HeaderText = "Prix unitaire (DT)";
-                        dgvListeVente.Columns["Prix"].Width = 130;
-                        dgvListeVente.Columns["Prix"].DefaultCellStyle.Format = "N2";
-                        dgvListeVente.Columns["Prix"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                    }
-
-                    // Masquer les colonnes inutiles
-                    if (dgvListeVente.Columns["Statut"] != null)
-                        dgvListeVente.Columns["Statut"].Visible = false;
-                    if (dgvListeVente.Columns["Genre"] != null)
-                        dgvListeVente.Columns["Genre"].Visible = false;
-                    if (dgvListeVente.Columns["Seuil"] != null)
-                        dgvListeVente.Columns["Seuil"].Visible = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur lors de la personnalisation des colonnes : {ex.Message}",
                     "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -150,12 +56,10 @@ namespace Projet_Pharmacie
             try
             {
                 decimal total = 0;
-
                 foreach (var produit in ListeVente.ProduitsVente)
                 {
                     total += produit.Prix * produit.Quantite;
                 }
-
                 lblPrixTotal.Text = $"Prix Total: {total:N2} DT";
             }
             catch (Exception ex)
@@ -176,7 +80,6 @@ namespace Projet_Pharmacie
                     return;
                 }
 
-                // Confirmation de la vente
                 DialogResult confirmation = MessageBox.Show(
                     "Êtes-vous sûr de vouloir valider cette vente?",
                     "Confirmation",
@@ -186,11 +89,6 @@ namespace Projet_Pharmacie
                 if (confirmation != DialogResult.Yes)
                     return;
 
-                // Mettre à jour le stock dans ComptePharmacien
-                // Note: Vous devrez passer la liste produitsStock depuis ComptePharmacien
-                // ou la rendre statique pour pouvoir la modifier ici
-
-                // Pour l'instant, on simule la mise à jour
                 bool stockMisAJour = MettreAJourStock();
 
                 if (stockMisAJour)
@@ -198,10 +96,7 @@ namespace Projet_Pharmacie
                     MessageBox.Show("Vente validée et stock mis à jour!",
                         "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // Vider la liste de vente
                     ListeVente.ProduitsVente.Clear();
-
-                    // Fermer le formulaire
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
@@ -222,15 +117,16 @@ namespace Projet_Pharmacie
         {
             try
             {
-                // Accéder au stock depuis ComptePharmacien
-                // Cette méthode nécessite que produitsStock soit accessible
-
-                // Solution temporaire: marquer les produits comme vendus
                 foreach (var produitVente in ListeVente.ProduitsVente)
                 {
-                    // Le stock sera mis à jour dans ComptePharmacien
-                    // via ListeVente.ProduitsVendus
-                    ListeVente.ProduitsVendus.Add(produitVente);
+                    ListeVente.ProduitsVendus.Add(new Produit(
+                        produitVente.Reference,
+                        produitVente.TypeProduit,
+                        produitVente.NomProduit,
+                        produitVente.Quantite,
+                        produitVente.Prix,
+                        "Vendu"
+                    ));
                 }
 
                 return true;
@@ -255,9 +151,7 @@ namespace Projet_Pharmacie
 
                 if (result == DialogResult.Yes)
                 {
-                    // Vider la liste de vente
                     ListeVente.ProduitsVente.Clear();
-
                     this.DialogResult = DialogResult.Cancel;
                     this.Close();
                 }
@@ -273,7 +167,6 @@ namespace Projet_Pharmacie
         {
             try
             {
-                // Retourner sans valider ni annuler
                 this.Close();
             }
             catch (Exception ex)

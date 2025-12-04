@@ -183,6 +183,7 @@
             this.BtnConfirmer.TabIndex = 18;
             this.BtnConfirmer.Text = "Confirmer";
             this.BtnConfirmer.UseVisualStyleBackColor = true;
+            this.BtnConfirmer.Click += new System.EventHandler(this.BtnConfirmer_Click);
             // 
             // NouveauCompteAdmin
             // 
@@ -233,5 +234,6 @@
         private System.Windows.Forms.TextBox BoxLoginN;
         private System.Windows.Forms.TextBox BoxID;
         private System.Windows.Forms.Button BtnConfirmer;
-    }
+       
+        }
 }

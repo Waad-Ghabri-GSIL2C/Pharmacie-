@@ -31,6 +31,7 @@
             this.dgvListeVente = new System.Windows.Forms.DataGridView();
             this.PrixTotal = new System.Windows.Forms.Label();
             this.lblPrixTotal = new System.Windows.Forms.Label();
+            this.btnValiderVente = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvListeVente)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,11 +62,22 @@
             this.lblPrixTotal.TabIndex = 2;
             this.lblPrixTotal.Text = "0.000DT";
             // 
+            // btnValiderVente
+            // 
+            this.btnValiderVente.Location = new System.Drawing.Point(829, 352);
+            this.btnValiderVente.Name = "btnValiderVente";
+            this.btnValiderVente.Size = new System.Drawing.Size(180, 49);
+            this.btnValiderVente.TabIndex = 3;
+            this.btnValiderVente.Text = "Valider Vente ";
+            this.btnValiderVente.UseVisualStyleBackColor = true;
+            this.btnValiderVente.Click += new System.EventHandler(this.btnValiderVente_Click);
+            // 
             // ValidationVente
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1093, 450);
+            this.Controls.Add(this.btnValiderVente);
             this.Controls.Add(this.lblPrixTotal);
             this.Controls.Add(this.PrixTotal);
             this.Controls.Add(this.dgvListeVente);
@@ -83,5 +95,7 @@
         private System.Windows.Forms.DataGridView dgvListeVente;
         private System.Windows.Forms.Label PrixTotal;
         private System.Windows.Forms.Label lblPrixTotal;
+        private System.Windows.Forms.Button btnValiderVente;
+
     }
 }

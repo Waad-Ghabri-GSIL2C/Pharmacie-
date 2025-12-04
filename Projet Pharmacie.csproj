@@ -87,6 +87,24 @@
     <Compile Include="EspaceUtilisateur.Designer.cs">
       <DependentUpon>EspaceUtilisateur.cs</DependentUpon>
     </Compile>
+    <Compile Include="GestionComptes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GestionComptes.Designer.cs">
+      <DependentUpon>GestionComptes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GestionFournisseurs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GestionFournisseurs.Designer.cs">
+      <DependentUpon>GestionFournisseurs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GestionStock.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GestionStock.Designer.cs">
+      <DependentUpon>GestionStock.cs</DependentUpon>
+    </Compile>
     <Compile Include="NouveauCompteAdmin.cs">
       <SubType>Form</SubType>
     </Compile>

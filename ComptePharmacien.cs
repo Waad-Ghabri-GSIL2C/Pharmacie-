@@ -64,18 +64,6 @@ namespace Projet_Pharmacie
                 dgvStock.BackgroundColor = System.Drawing.Color.White;
                 dgvStock.BorderStyle = BorderStyle.Fixed3D;
 
-                // Style des en-têtes
-                dgvStock.EnableHeadersVisualStyles = false;
-                dgvStock.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.Navy;
-                dgvStock.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White;
-                dgvStock.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
-                dgvStock.ColumnHeadersHeight = 30;
-
-                // Style des lignes
-                dgvStock.RowsDefaultCellStyle.Font = new System.Drawing.Font("Arial", 9F);
-                dgvStock.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-                dgvStock.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.DarkBlue;
-                dgvStock.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
             }
             catch (Exception ex)
             {
