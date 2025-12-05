@@ -39,6 +39,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.dgvCommandes = new System.Windows.Forms.DataGridView();
+            this.btn_Annuler = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFournisseurs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCommandes)).BeginInit();
             this.SuspendLayout();
@@ -140,11 +141,22 @@
             this.dgvCommandes.TabIndex = 8;
             this.dgvCommandes.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCommandes_CellContentClick);
             // 
+            // btn_Annuler
+            // 
+            this.btn_Annuler.Location = new System.Drawing.Point(883, 600);
+            this.btn_Annuler.Name = "btn_Annuler";
+            this.btn_Annuler.Size = new System.Drawing.Size(176, 36);
+            this.btn_Annuler.TabIndex = 11;
+            this.btn_Annuler.Text = "Annuler";
+            this.btn_Annuler.UseVisualStyleBackColor = true;
+            this.btn_Annuler.Click += new System.EventHandler(this.btn_Annuler_Click);
+            // 
             // GestionFournisseurs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1081, 608);
+            this.ClientSize = new System.Drawing.Size(1081, 648);
+            this.Controls.Add(this.btn_Annuler);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.dgvCommandes);
@@ -178,5 +190,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.DataGridView dgvCommandes;
+        private System.Windows.Forms.Button btn_Annuler;
     }
 }

@@ -141,6 +141,9 @@
     <EmbeddedResource Include="GestionFournisseurs.resx">
       <DependentUpon>GestionFournisseurs.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GestionStock.resx">
+      <DependentUpon>GestionStock.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="NouveauCompteAdmin.resx">
       <DependentUpon>NouveauCompteAdmin.cs</DependentUpon>
     </EmbeddedResource>

@@ -43,7 +43,6 @@
             this.label1.Size = new System.Drawing.Size(49, 16);
             this.label1.TabIndex = 0;
             this.label1.Text = "Login : ";
-           
             // 
             // label2
             // 
@@ -83,7 +82,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(724, 422);
             this.Controls.Add(this.BtnConnexion1);
             this.Controls.Add(this.BoxMDP1);
             this.Controls.Add(this.BoxLogin1);

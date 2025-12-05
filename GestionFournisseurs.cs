@@ -161,5 +161,9 @@ namespace Projet_Pharmacie
         }
 
 
+        private void btn_Annuler_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }
