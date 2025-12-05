@@ -39,7 +39,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(165, 101);
+            this.label1.Location = new System.Drawing.Point(132, 83);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 16);
             this.label1.TabIndex = 0;
@@ -48,7 +48,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(165, 181);
+            this.label2.Location = new System.Drawing.Point(132, 163);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(95, 16);
             this.label2.TabIndex = 1;
@@ -56,7 +56,7 @@
             // 
             // BoxLogin
             // 
-            this.BoxLogin.Location = new System.Drawing.Point(400, 116);
+            this.BoxLogin.Location = new System.Drawing.Point(367, 98);
             this.BoxLogin.Name = "BoxLogin";
             this.BoxLogin.Size = new System.Drawing.Size(100, 22);
             this.BoxLogin.TabIndex = 2;
@@ -64,14 +64,14 @@
             // 
             // BoxMDP
             // 
-            this.BoxMDP.Location = new System.Drawing.Point(400, 181);
+            this.BoxMDP.Location = new System.Drawing.Point(367, 163);
             this.BoxMDP.Name = "BoxMDP";
             this.BoxMDP.Size = new System.Drawing.Size(100, 22);
             this.BoxMDP.TabIndex = 3;
             // 
             // BtnConnexion
             // 
-            this.BtnConnexion.Location = new System.Drawing.Point(233, 242);
+            this.BtnConnexion.Location = new System.Drawing.Point(200, 224);
             this.BtnConnexion.Name = "BtnConnexion";
             this.BtnConnexion.Size = new System.Drawing.Size(233, 48);
             this.BtnConnexion.TabIndex = 4;
@@ -81,7 +81,7 @@
             // 
             // BtnCompte
             // 
-            this.BtnCompte.Location = new System.Drawing.Point(233, 325);
+            this.BtnCompte.Location = new System.Drawing.Point(200, 307);
             this.BtnCompte.Name = "BtnCompte";
             this.BtnCompte.Size = new System.Drawing.Size(233, 48);
             this.BtnCompte.TabIndex = 5;
@@ -93,7 +93,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(645, 426);
             this.Controls.Add(this.BtnCompte);
             this.Controls.Add(this.BtnConnexion);
             this.Controls.Add(this.BoxMDP);

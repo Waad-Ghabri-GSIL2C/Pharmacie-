@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CLASSES\Administrateur.cs" />
+    <Compile Include="CLASSES\CommandeFournisseur.cs" />
     <Compile Include="CLASSES\Fournisseur.cs" />
     <Compile Include="CLASSES\ListeVente.cs" />
     <Compile Include="CLASSES\Medicaments.cs" />
@@ -133,6 +134,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EspaceUtilisateur.resx">
       <DependentUpon>EspaceUtilisateur.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GestionComptes.resx">
+      <DependentUpon>GestionComptes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GestionFournisseurs.resx">
+      <DependentUpon>GestionFournisseurs.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NouveauCompteAdmin.resx">
       <DependentUpon>NouveauCompteAdmin.cs</DependentUpon>

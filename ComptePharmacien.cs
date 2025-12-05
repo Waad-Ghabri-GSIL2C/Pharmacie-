@@ -9,7 +9,8 @@ namespace Projet_Pharmacie
     public partial class ComptePharmacien : Form
     {
         // Liste des produits en stock
-        private List<Produit> produitsStock = new List<Produit>();
+        public static List<Produit> produitsStock = new List<Produit>();
+        public static List<CommandeFournisseur> commandesEnAttente = new List<CommandeFournisseur>();
         private Produit produitSelectionne = null;
 
         public ComptePharmacien()
@@ -52,39 +53,24 @@ namespace Projet_Pharmacie
 
         private void ConfigurerDataGridView()
         {
-            try
-            {
-                // Configuration de base
-                dgvStock.AutoGenerateColumns = true;
-                dgvStock.AllowUserToAddRows = false;
-                dgvStock.AllowUserToDeleteRows = false;
-                dgvStock.ReadOnly = true;
-                dgvStock.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                dgvStock.MultiSelect = false;
-                dgvStock.BackgroundColor = System.Drawing.Color.White;
-                dgvStock.BorderStyle = BorderStyle.Fixed3D;
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur de configuration du DataGridView : {ex.Message}",
-                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            dgvStock.ReadOnly = true;
+            dgvStock.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvStock.MultiSelect = false;
         }
 
         private void InitialiserDonnees()
         {
             try
             {
-                if (produitsStock.Count == 0)
-                {
-                    produitsStock.Add(new Produit("P001", StatutP.Medicaments, "Paracétamol", 100, 5.50m, "En stock"));
-                    produitsStock.Add(new Produit("P002", StatutP.Medicaments, "Aspirine", 50, 7.00m, "En stock"));
-                    produitsStock.Add(new Produit("P003", StatutP.Para, "Vitamine C", 75, 12.00m, "En stock"));
-                    produitsStock.Add(new Produit("P004", StatutP.Para, "Crème hydratante", 30, 15.50m, "Stock limité"));
-                    produitsStock.Add(new Produit("P005", StatutP.Medicaments, "Ibuprofène", 80, 6.50m, "En stock"));
-                    produitsStock.Add(new Produit("P006", StatutP.Medicaments, "Sirop contre la toux", 40, 9.00m, "En stock"));
-                    produitsStock.Add(new Produit("P007", StatutP.Para, "Pommade anti-inflammatoire", 25, 11.50m, "Stock limité"));
+                if(ComptePharmacien.produitsStock.Count == 0)
+{
+                    ComptePharmacien.produitsStock.Add(new Produit("P001", StatutP.Medicaments, "Paracétamol", 100, 5.50m, "En stock"));
+                    ComptePharmacien.produitsStock.Add(new Produit("P002", StatutP.Medicaments, "Aspirine", 50, 7.00m, "En stock"));
+                    ComptePharmacien.produitsStock.Add(new Produit("P003", StatutP.Para, "Vitamine C", 75, 12.00m, "En stock"));
+                    ComptePharmacien.produitsStock.Add(new Produit("P004", StatutP.Para, "Crème hydratante", 30, 15.50m, "Stock limité"));
+                    ComptePharmacien.produitsStock.Add(new Produit("P005", StatutP.Medicaments, "Ibuprofène", 80, 6.50m, "En stock"));
+                    ComptePharmacien.produitsStock.Add(new Produit("P006", StatutP.Medicaments, "Sirop contre la toux", 40, 9.00m, "En stock"));
+                    ComptePharmacien.produitsStock.Add(new Produit("P007", StatutP.Para, "Pommade anti-inflammatoire", 25, 11.50m, "Stock limité"));
                 }
             }
             catch (Exception ex)
@@ -101,14 +87,14 @@ namespace Projet_Pharmacie
             try
             {
                 // S'assurer que les données existent
-                if (produitsStock.Count == 0)
+                if (ComptePharmacien.produitsStock.Count == 0)
                 {
                     InitialiserDonnees();
                 }
 
                 // Lier les données au DataGridView
                 dgvStock.DataSource = null;
-                dgvStock.DataSource = new System.ComponentModel.BindingList<Produit>(produitsStock);
+                dgvStock.DataSource = new System.ComponentModel.BindingList<Produit>(ComptePharmacien.produitsStock);
 
                 // Personnaliser les colonnes
                 PersonnaliserColonnes();
@@ -199,7 +185,7 @@ namespace Projet_Pharmacie
                 }
 
                 // Rechercher le produit par nom
-                produitSelectionne = produitsStock.FirstOrDefault(p =>
+                produitSelectionne = ComptePharmacien.produitsStock.FirstOrDefault(p =>
                     p.NomProduit.ToLower().Contains(nomRecherche.ToLower()));
 
                 if (produitSelectionne != null)
@@ -346,7 +332,7 @@ namespace Projet_Pharmacie
                 foreach (var produitVendu in ListeVente.ProduitsVendus)
                 {
                     // Trouver le produit correspondant dans le stock
-                    var produitStock = produitsStock.FirstOrDefault(p =>
+                    var produitStock = ComptePharmacien.produitsStock.FirstOrDefault(p =>
                         p.Reference == produitVendu.Reference);
 
                     if (produitStock != null)
