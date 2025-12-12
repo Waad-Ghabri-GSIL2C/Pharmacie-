@@ -34,12 +34,14 @@
             this.BoxMDP = new System.Windows.Forms.TextBox();
             this.BtnConnexion = new System.Windows.Forms.Button();
             this.BtnCompte = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(132, 83);
+            this.label1.Location = new System.Drawing.Point(150, 118);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 16);
             this.label1.TabIndex = 0;
@@ -48,7 +50,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(132, 163);
+            this.label2.Location = new System.Drawing.Point(150, 166);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(95, 16);
             this.label2.TabIndex = 1;
@@ -56,7 +58,7 @@
             // 
             // BoxLogin
             // 
-            this.BoxLogin.Location = new System.Drawing.Point(367, 98);
+            this.BoxLogin.Location = new System.Drawing.Point(367, 115);
             this.BoxLogin.Name = "BoxLogin";
             this.BoxLogin.Size = new System.Drawing.Size(100, 22);
             this.BoxLogin.TabIndex = 2;
@@ -89,11 +91,23 @@
             this.BtnCompte.UseVisualStyleBackColor = true;
             this.BtnCompte.Click += new System.EventHandler(this.BtnCompte_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::Projet_Pharmacie.Properties.Resources.logo_removebg_preview;
+            this.pictureBox1.Location = new System.Drawing.Point(18, 18);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(50, 50);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 6;
+            this.pictureBox1.TabStop = false;
+            // 
             // EspaceAdministrateur
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(645, 426);
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.ClientSize = new System.Drawing.Size(637, 440);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.BtnCompte);
             this.Controls.Add(this.BtnConnexion);
             this.Controls.Add(this.BoxMDP);
@@ -103,6 +117,7 @@
             this.Name = "EspaceAdministrateur";
             this.Text = "EspaceAdministrateur";
             this.Load += new System.EventHandler(this.EspaceAdministrateur_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -116,5 +131,6 @@
         private System.Windows.Forms.TextBox BoxMDP;
         private System.Windows.Forms.Button BtnConnexion;
         private System.Windows.Forms.Button BtnCompte;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

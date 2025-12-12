@@ -31,22 +31,29 @@
             this.label1 = new System.Windows.Forms.Label();
             this.BtnAdministrateur = new System.Windows.Forms.Button();
             this.BtnPharmacien = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(308, 99);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.Green;
+            this.label1.Location = new System.Drawing.Point(82, 141);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(148, 16);
+            this.label1.Size = new System.Drawing.Size(558, 25);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Choisissez votre statut : ";
+            this.label1.Text = "Bienvenue dans la plateforme de gestion de pharmacie ! ";
             // 
             // BtnAdministrateur
             // 
-            this.BtnAdministrateur.Location = new System.Drawing.Point(283, 143);
+            this.BtnAdministrateur.BackColor = System.Drawing.Color.Snow;
+            this.BtnAdministrateur.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnAdministrateur.Location = new System.Drawing.Point(244, 309);
             this.BtnAdministrateur.Name = "BtnAdministrateur";
-            this.BtnAdministrateur.Size = new System.Drawing.Size(211, 67);
+            this.BtnAdministrateur.Size = new System.Drawing.Size(249, 84);
             this.BtnAdministrateur.TabIndex = 1;
             this.BtnAdministrateur.Text = "Administrateur";
             this.BtnAdministrateur.UseVisualStyleBackColor = true;
@@ -54,25 +61,51 @@
             // 
             // BtnPharmacien
             // 
-            this.BtnPharmacien.Location = new System.Drawing.Point(283, 228);
+            this.BtnPharmacien.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnPharmacien.Location = new System.Drawing.Point(244, 423);
             this.BtnPharmacien.Name = "BtnPharmacien";
-            this.BtnPharmacien.Size = new System.Drawing.Size(211, 67);
+            this.BtnPharmacien.Size = new System.Drawing.Size(249, 84);
             this.BtnPharmacien.TabIndex = 2;
             this.BtnPharmacien.Text = "Pharmacien";
             this.BtnPharmacien.UseVisualStyleBackColor = true;
             this.BtnPharmacien.Click += new System.EventHandler(this.BtnPharmacien_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label2.Location = new System.Drawing.Point(45, 249);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(428, 20);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Merci d’indiquer votre rôle afin d’accéder à votre espace";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::Projet_Pharmacie.Properties.Resources.logo_removebg_preview;
+            this.pictureBox1.Location = new System.Drawing.Point(290, 12);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(124, 117);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 4;
+            this.pictureBox1.TabStop = false;
+            // 
             // EspaceUtilisateur
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.ClientSize = new System.Drawing.Size(731, 587);
+            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.BtnPharmacien);
             this.Controls.Add(this.BtnAdministrateur);
             this.Controls.Add(this.label1);
             this.Name = "EspaceUtilisateur";
             this.Text = "EspaceUtilisateur";
             this.Load += new System.EventHandler(this.EspaceUtilisateur_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -83,6 +116,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button BtnAdministrateur;
         private System.Windows.Forms.Button BtnPharmacien;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 
