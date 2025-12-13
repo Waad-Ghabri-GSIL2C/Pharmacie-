@@ -32,7 +32,7 @@ namespace Gestion_Pharmacie.Classes
 
 
 
-            Seuil = 10; // Valeur par défaut
+            Seuil = 5; // Valeur par défaut
         }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EspaceUtilisateur));
             this.label1 = new System.Windows.Forms.Label();
             this.BtnAdministrateur = new System.Windows.Forms.Button();
             this.BtnPharmacien = new System.Windows.Forms.Button();
@@ -96,12 +97,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(731, 587);
+            this.ClientSize = new System.Drawing.Size(722, 587);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.BtnPharmacien);
             this.Controls.Add(this.BtnAdministrateur);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EspaceUtilisateur";
             this.Text = "EspaceUtilisateur";
             this.Load += new System.EventHandler(this.EspaceUtilisateur_Load);

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Projet_Pharmacie.DAL;
 
 namespace Projet_Pharmacie
 {
@@ -42,7 +43,7 @@ namespace Projet_Pharmacie
 
         private void EspaceUtilisateur_Load(object sender, EventArgs e)
         {
-
+           
         }
 
        

@@ -44,8 +44,6 @@ namespace Projet_Pharmacie
             }
 
             // Tous les champs sont remplis
-            // Ici vous pouvez ajouter le code pour sauvegarder le compte dans votre base de données
-
             MessageBox.Show("Votre compte a été créé avec succès!",
                            "Création réussie",
                            MessageBoxButtons.OK,

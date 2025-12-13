@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Projet_Pharmacie.DAL;
 
 namespace Projet_Pharmacie
 {
@@ -29,34 +30,39 @@ namespace Projet_Pharmacie
 
         private void BtnConnexion_Click(object sender, EventArgs e)
         {
-            // Vérifier les identifiants (à implémenter)
-            string login = BoxLogin.Text;
+            string login = BoxLogin.Text.Trim();
             string motDePasse = BoxMDP.Text;
 
-
-
-            // Vérifications basiques côté client
+            // Vérifications basiques
             if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(motDePasse))
             {
                 MessageBox.Show("Veuillez saisir votre login et votre mot de passe.",
-                                "Connexion", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                    "Connexion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
-
-
             }
 
+            // VÉRIFICATION DANS LA BASE DE DONNÉES
+            bool connexionReussie = Projet_Pharmacie.DAL.AdministrateurDAL.VerifierConnexion(login, motDePasse);
 
-            // Optionnel : vider le mot de passe 
-            BoxMDP.Clear();
+            if (connexionReussie)
+            {
+                MessageBox.Show("✅ Connexion réussie ! Bienvenue Administrateur.",
+                    "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            CompteAdministrateur compteAdministrateur = new CompteAdministrateur();
-            compteAdministrateur.Show();
+                // Ouvrir l'interface admin
+                CompteAdministrateur compteAdministrateur = new CompteAdministrateur();
+                compteAdministrateur.Show();
+                this.Hide();
+            }
+            else
+            {
+                MessageBox.Show("❌ Login ou mot de passe incorrect.\n\nVeuillez vérifier vos coordonnées.",
+                    "Échec de connexion", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-            // Optionnel : Cacher la fenêtre actuelle
-            this.Hide();
-            return;
-
+                // Effacer le mot de passe
+                BoxMDP.Clear();
+                BoxMDP.Focus();
+            }
         }
         private void BoxLogin_TextChanged(object sender, EventArgs e)
         {
@@ -73,7 +79,7 @@ namespace Projet_Pharmacie
             NouveauCompteAdmin nouveauCompte = new NouveauCompteAdmin();
             nouveauCompte.Show();
 
-            // Optionnel : Cacher la fenêtre actuelle
+            
             this.Hide();
             return;
         }

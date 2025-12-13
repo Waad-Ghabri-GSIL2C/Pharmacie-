@@ -1,0 +1,20 @@
+﻿
+- L'administrateur est le seul à avoir le droit de créer un compte 
+- Après connexion , il peut accéder à 3 fonctionnalités ( Login : admin / Mot de passe : admin123 )
+   * Gestion des comptes : ou il peut ajouter / supprimer un pharmacien 
+   * Gestion du stock : ou il peut consulter le stock , ajouter un nouveau produit , modifier le prix d'un produit 
+   ou totalement supprimer un produit .
+   * Gestion des fournisseurs : ou il peut consulter la liste des fournisseurs , passer une commande et changer 
+   l'état d'une commande (en attente --> reçue) et par suite le stock sera mis à jour automatiquement .
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+ ++ Remarque : L’accès du pharmacien au système est conditionné par la création préalable de son compte par l’administrateur, 
+ qui lui attribue un identifiant et un mot de passe.
+
+ -------------------------------------------------------------------------------------------------------------------------------
+
+- Le pharmacien peut se connecter à partir du compte fourni par l'administrateur 
+- Il peut consulter le stock , rechercher des produits pour les ajouter dans la liste de vente (ordonnance)
+et afficher la liste de vente .
+- Il peut après valider cette liste de vente et par suite le stock sera mis à jour automatiquement .

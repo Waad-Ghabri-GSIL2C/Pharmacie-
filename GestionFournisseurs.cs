@@ -1,166 +1,358 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Data;
 using System.Windows.Forms;
-using Gestion_Pharmacie.Classes;
+using Projet_Pharmacie.DAL;
 
 namespace Projet_Pharmacie
 {
     public partial class GestionFournisseurs : Form
     {
-        private List<Fournisseur> fournisseurs = new List<Fournisseur>();
-
         public GestionFournisseurs()
         {
             InitializeComponent();
-            InitialiserFournisseurs();
+        }
 
+        private void GestionFournisseurs_Load(object sender, EventArgs e)
+        {
             ChargerFournisseurs();
             ChargerCommandes();
         }
 
-
-
-        private void InitialiserFournisseurs()
-        {
-            var f1 = new Fournisseur(1, "PharmaPlus", "Tunis", "contact@pharmaplus.tn", "71123456");
-            f1.ListeProduitsFournis.Add(new Produit("P003", StatutP.Para, "Vitamine C", 0, 12.00m, ""));
-            f1.ListeProduitsFournis.Add(new Produit("P004", StatutP.Para, "Crème hydratante", 0, 15.50m, ""));
-
-            var f2 = new Fournisseur(2, "MediCare", "Sfax", "info@medicare.tn", "74987654");
-            f2.ListeProduitsFournis.Add(new Produit("P007", StatutP.Para, "Pommade anti-inflammatoire", 0, 11.50m, ""));
-
-            var f3 = new Fournisseur(3, "HealthSupply", "Sousse", "sales@healthsupply.tn", "73456789");
-
-            fournisseurs.Add(f1);
-            fournisseurs.Add(f2);
-            fournisseurs.Add(f3);
-        }
-
+        /// <summary>
+        /// Charge tous les fournisseurs depuis la base de données
+        /// </summary>
         private void ChargerFournisseurs()
         {
-            dgvFournisseurs.AutoGenerateColumns = false;
-            dgvFournisseurs.Columns.Clear();
-
-            dgvFournisseurs.Columns.Add(new DataGridViewTextBoxColumn
+            try
             {
-                DataPropertyName = "NomF",
-                HeaderText = "Fournisseur",
-                Width = 150
-            });
+                // Récupérer les fournisseurs depuis la BD
+                DataTable dt = FournisseurDAL.GetAllFournisseurs();
 
-            dgvFournisseurs.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "ColProduits",
-                HeaderText = "Produit",
-                Width = 200
-            });
+                // Configurer le DataGridView
+                dgvFournisseurs.AutoGenerateColumns = false;
+                dgvFournisseurs.Columns.Clear();
 
-            dgvFournisseurs.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "EmailF",
-                HeaderText = "Email",
-                Width = 200
-            });
-
-            dgvFournisseurs.DataSource = new System.ComponentModel.BindingList<Fournisseur>(fournisseurs);
-
-            // ⬇️ Utilisez DataBindingComplete au lieu de foreach
-            dgvFournisseurs.DataBindingComplete += (s, e) =>
-            {
-                foreach (DataGridViewRow row in dgvFournisseurs.Rows)
+                // Colonnes
+                dgvFournisseurs.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    var fournisseur = (Fournisseur)row.DataBoundItem;
-                    var produits = string.Join(", ", fournisseur.ListeProduitsFournis.Select(p => p.NomProduit));
-                    row.Cells["ColProduits"].Value = string.IsNullOrEmpty(produits) ? "Aucun" : produits;
-                }
-            };
+                    DataPropertyName = "FournisseurID",
+                    HeaderText = "ID",
+                    Name = "FournisseurID",
+                    Visible = false // Caché mais utile pour récupérer l'ID
+                });
+
+                dgvFournisseurs.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "NomFournisseur",
+                    HeaderText = "Fournisseur",
+                    Name = "NomFournisseur",
+                    Width = 200
+                });
+
+                dgvFournisseurs.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Email",
+                    HeaderText = "Email",
+                    Name = "Email",
+                    Width = 200
+                });
+
+                dgvFournisseurs.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Telephone",
+                    HeaderText = "Téléphone",
+                    Name = "Telephone",
+                    Width = 120
+                });
+
+                dgvFournisseurs.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Adresse",
+                    HeaderText = "Adresse",
+                    Name = "Adresse",
+                    Width = 200
+                });
+
+                dgvFournisseurs.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "ProduitsFournis",
+                    HeaderText = "ProduitsFournis",
+                    Name = "ProduitsFournis",
+                    Width = 200
+                });
+
+                // Lier les données
+                dgvFournisseurs.DataSource = dt;
+
+                // Message dans le titre
+                this.Text = $"Gestion Fournisseurs - {dt.Rows.Count} fournisseur(s)";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors du chargement des fournisseurs : {ex.Message}",
+                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
+        /// <summary>
+        /// Charge toutes les commandes en attente depuis la base de données
+        /// </summary>
         private void ChargerCommandes()
         {
-            dgvCommandes.AutoGenerateColumns = false;
-            dgvCommandes.Columns.Clear();
+            try
+            {
+                // Récupérer les commandes en attente depuis la BD
+                DataTable dt = CommandeDAL.GetCommandesEnAttente();
 
-            dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "NomProduit", HeaderText = "Nom produit", Width = 150 });
-            dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Quantite", HeaderText = "Quantité", Width = 80 });
-            dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "NomFournisseur", HeaderText = "Fournisseur", Width = 150 });
-            dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "DelaiJours", HeaderText = "Délai (jours)", Width = 100 });
+                // Configurer le DataGridView
+                dgvCommandes.AutoGenerateColumns = false;
+                dgvCommandes.Columns.Clear();
 
-            var btnRecue = new DataGridViewButtonColumn { HeaderText = "Reçue / Attente", Text = "Reçue", UseColumnTextForButtonValue = true, Width = 120 };
-            dgvCommandes.Columns.Add(btnRecue);
+                // Colonnes
+                dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "CommandeID",
+                    HeaderText = "ID",
+                    Name = "CommandeID",
+                    Visible = false // Caché mais nécessaire
+                });
 
-            dgvCommandes.DataSource = new System.ComponentModel.BindingList<CommandeFournisseur>(ComptePharmacien.commandesEnAttente);
+                dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "NomProduit",
+                    HeaderText = "Nom produit",
+                    Name = "NomProduit",
+                    Width = 200
+                });
+
+                dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Quantite",
+                    HeaderText = "Quantité",
+                    Name = "Quantite",
+                    Width = 80
+                });
+
+                dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "NomFournisseur",
+                    HeaderText = "Fournisseur",
+                    Name = "NomFournisseur",
+                    Width = 150
+                });
+
+                dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Delai",
+                    HeaderText = "Délai (jours)",
+                    Name = "Delai",
+                    Width = 100
+                });
+
+                dgvCommandes.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "DateCommande",
+                    HeaderText = "Date",
+                    Name = "DateCommande",
+                    Width = 120,
+                    DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" }
+                });
+
+                // Bouton "Reçue"
+                var btnRecue = new DataGridViewButtonColumn
+                {
+                    HeaderText = "Action",
+                    Text = "Reçue",
+                    Name = "BtnRecue",
+                    UseColumnTextForButtonValue = true,
+                    Width = 100
+                };
+                dgvCommandes.Columns.Add(btnRecue);
+
+                // Lier les données
+                dgvCommandes.DataSource = dt;
+
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors du chargement des commandes : {ex.Message}",
+                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
+        /// <summary>
+        /// Événement : Clic sur le bouton Valider Commande
+        /// </summary>
         private void btnValiderCommande_Click(object sender, EventArgs e)
         {
-            if (dgvFournisseurs.SelectedRows.Count == 0)
+            try
             {
-                MessageBox.Show("Sélectionnez un fournisseur.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtNomProduit.Text) || !int.TryParse(txtQuantite.Text, out int qte) || qte <= 0 || !int.TryParse(txtDelai.Text, out int delai) || delai <= 0)
-            {
-                MessageBox.Show("Vérifiez les champs (nom, quantité et délai doivent être valides).", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            var fournisseur = (Fournisseur)dgvFournisseurs.SelectedRows[0].DataBoundItem;
-            var commande = new CommandeFournisseur(txtNomProduit.Text.Trim(), qte, fournisseur.NomF, delai, "En attente");
-
-            ComptePharmacien.commandesEnAttente.Add(commande);
-            MessageBox.Show("Commande créée avec succès !", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            txtNomProduit.Clear();
-            txtQuantite.Clear();
-            txtDelai.Clear();
-            ChargerCommandes();
-        }
-
-        private void dgvCommandes_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // Vérifier que ce n'est pas l'en-tête
-            if (e.RowIndex < 0) return;
-
-            // Vérifier que c'est bien la colonne du bouton (dernière colonne)
-            if (e.ColumnIndex == dgvCommandes.Columns.Count - 1)
-            {
-                var commande = (CommandeFournisseur)dgvCommandes.Rows[e.RowIndex].DataBoundItem;
-
-                if (MessageBox.Show($"Confirmer la réception ?\n\n{commande.NomProduit}\nQuantité : {commande.Quantite}",
-                    "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                // Vérifier qu'un fournisseur est sélectionné
+                if (dgvFournisseurs.SelectedRows.Count == 0)
                 {
-                    MettreAJourStock(commande);
-                    ComptePharmacien.commandesEnAttente.Remove(commande);
+                    MessageBox.Show("Veuillez sélectionner un fournisseur.", "Attention",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                    // ⬇️ Recharger DIFFÉREMMENT
-                    dgvCommandes.DataSource = null;
-                    dgvCommandes.DataSource = new System.ComponentModel.BindingList<CommandeFournisseur>(ComptePharmacien.commandesEnAttente);
+                // Validation des champs
+                if (string.IsNullOrWhiteSpace(txtNomProduit.Text))
+                {
+                    MessageBox.Show("Veuillez entrer le nom du produit.", "Attention",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtNomProduit.Focus();
+                    return;
+                }
 
-                    MessageBox.Show("Réception validée et stock mis à jour !", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (!int.TryParse(txtQuantite.Text, out int quantite) || quantite <= 0)
+                {
+                    MessageBox.Show("Veuillez entrer une quantité valide (nombre entier positif).", "Attention",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtQuantite.Focus();
+                    return;
+                }
+
+                if (!int.TryParse(txtDelai.Text, out int delai) || delai <= 0)
+                {
+                    MessageBox.Show("Veuillez entrer un délai valide (nombre de jours).", "Attention",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtDelai.Focus();
+                    return;
+                }
+
+                // Récupérer le fournisseur sélectionné
+                DataRowView rowView = (DataRowView)dgvFournisseurs.SelectedRows[0].DataBoundItem;
+                int fournisseurID = Convert.ToInt32(rowView["FournisseurID"]);
+                string nomFournisseur = rowView["NomFournisseur"].ToString();
+
+                // Chercher le produit dans la base de données
+                string nomProduit = txtNomProduit.Text.Trim();
+                DataTable dtProduits = ProduitDAL.RechercherProduits(nomProduit);
+
+                int produitID;
+
+                if (dtProduits.Rows.Count > 0)
+                {
+                    // Produit existe
+                    produitID = Convert.ToInt32(dtProduits.Rows[0]["ProduitID"]);
+                }
+                else
+                {
+                    // Produit n'existe pas, demander si on veut le créer
+                    DialogResult result = MessageBox.Show(
+                        $"Le produit '{nomProduit}' n'existe pas dans la base de données.\n\n" +
+                        "Voulez-vous le créer maintenant ?",
+                        "Produit inexistant",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.No)
+                    {
+                        return;
+                    }
+
+                    // Créer le produit avec quantité 0 (sera mis à jour à la réception)
+                    string reference = "P" + (new Random().Next(1000, 9999)).ToString();
+                    bool produitCree = ProduitDAL.AjouterProduit(reference, "Para", nomProduit, 0, 0, 10);
+
+                    if (!produitCree)
+                    {
+                        MessageBox.Show("Impossible de créer le produit.", "Erreur",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Récupérer l'ID du produit créé
+                    dtProduits = ProduitDAL.RechercherProduits(nomProduit);
+                    produitID = Convert.ToInt32(dtProduits.Rows[0]["ProduitID"]);
+                }
+
+                // Ajouter la commande dans la base de données
+                bool resultat = CommandeDAL.AjouterCommande(fournisseurID, produitID, nomProduit, quantite, delai);
+
+                if (resultat)
+                {
+                    MessageBox.Show(
+                        $"✅ Commande créée avec succès!\n\n" +
+                        $"Fournisseur: {nomFournisseur}\n" +
+                        $"Produit: {nomProduit}\n" +
+                        $"Quantité: {quantite}\n" +
+                        $"Délai: {delai} jours",
+                        "Succès",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    // Vider les champs
+                    txtNomProduit.Clear();
+                    txtQuantite.Clear();
+                    txtDelai.Clear();
+
+                    // Recharger les commandes
+                    ChargerCommandes();
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de la création de la commande : {ex.Message}",
+                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void MettreAJourStock(CommandeFournisseur commande)
+        /// <summary>
+        /// Événement : Clic sur le bouton "Reçue" dans le DataGridView des commandes
+        /// </summary>
+        private void dgvCommandes_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            var produit = ComptePharmacien.produitsStock.FirstOrDefault(p => p.NomProduit.ToLower() == commande.NomProduit.ToLower());
+            try
+            {
+                // Vérifier que ce n'est pas l'en-tête
+                if (e.RowIndex < 0) return;
 
-            if (produit != null)
-            {
-                produit.Quantite += commande.Quantite;
-                produit.Statut = produit.Quantite >= 50 ? "En stock" : produit.Quantite >= 20 ? "Stock limité" : "Stock bas";
+                // Vérifier que c'est bien la colonne du bouton "Reçue"
+                if (e.ColumnIndex == dgvCommandes.Columns["BtnRecue"].Index)
+                {
+                    // Récupérer la commande
+                    DataRowView rowView = (DataRowView)dgvCommandes.Rows[e.RowIndex].DataBoundItem;
+                    int commandeID = Convert.ToInt32(rowView["CommandeID"]);
+                    string nomProduit = rowView["NomProduit"].ToString();
+                    int quantite = Convert.ToInt32(rowView["Quantite"]);
+                    string nomFournisseur = rowView["NomFournisseur"].ToString();
+
+                    // Confirmer la réception
+                    DialogResult result = MessageBox.Show(
+                        $"Confirmer la réception de cette commande ?\n\n" +
+                        $"📦 Produit : {nomProduit}\n" +
+                        $"📊 Quantité : {quantite}\n" +
+                        $"🏢 Fournisseur : {nomFournisseur}\n\n" +
+                        $"⚠️ Le stock sera automatiquement mis à jour !",
+                        "Confirmation de réception",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        // Marquer la commande comme reçue (DÉCLENCHE LE TRIGGER SQL)
+                        bool receptionOk = CommandeDAL.MarquerCommandeRecue(commandeID);
+
+                        if (receptionOk)
+                        {
+                            // Recharger les commandes
+                            ChargerCommandes();
+                        }
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                string refProduit = "P" + (ComptePharmacien.produitsStock.Count + 1).ToString("000");
-                ComptePharmacien.produitsStock.Add(new Produit(refProduit, StatutP.Para, commande.NomProduit, commande.Quantite, 0m, "En stock"));
+                MessageBox.Show($"Erreur lors de la réception de la commande : {ex.Message}",
+                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-
+        /// <summary>
+        /// Événement : Bouton Annuler
+        /// </summary>
         private void btn_Annuler_Click(object sender, EventArgs e)
         {
             this.Close();

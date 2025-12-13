@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Projet_Pharmacie.DAL;
 
 namespace Projet_Pharmacie
 {
     public partial class GestionComptes : Form
     {
-      
         public GestionComptes()
         {
             InitializeComponent();
@@ -27,6 +21,49 @@ namespace Projet_Pharmacie
             dgv_ComptePhar.MultiSelect = false;
             dgv_ComptePhar.AllowUserToAddRows = false;
             dgv_ComptePhar.ReadOnly = true;
+        }
+
+        // Événement du chargement du formulaire
+        private void GestionComptes_Load(object sender, EventArgs e)
+        {
+            // Charger tous les pharmaciens depuis la base de données
+            ChargerPharmaciens();
+            txtIDPhar.Focus();
+        }
+
+        /// <summary>
+        /// Charge tous les pharmaciens depuis la base de données dans le DataGridView
+        /// </summary>
+        private void ChargerPharmaciens()
+        {
+            try
+            {
+                // Récupérer les données depuis la base
+                DataTable dt = PharmacienDAL.GetAllPharmaciens();
+
+                // Vider le DataGridView
+                dgv_ComptePhar.Rows.Clear();
+
+                // Remplir le DataGridView avec les données
+                foreach (DataRow row in dt.Rows)
+                {
+                    int index = dgv_ComptePhar.Rows.Add();
+                    dgv_ComptePhar.Rows[index].Cells["ID"].Value = row["ID"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["Nom"].Value = row["Nom"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["Prenom"].Value = row["Prenom"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["Login"].Value = row["Login"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["MotDePasse"].Value = row["MotDePasse"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["Email"].Value = row["Email"].ToString();
+                }
+
+                // Afficher le nombre de pharmaciens
+                this.Text = $"Gestion des Comptes - {dt.Rows.Count} pharmacien(s)";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors du chargement des pharmaciens : {ex.Message}",
+                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // Événement du bouton Ajouter
@@ -83,42 +120,27 @@ namespace Projet_Pharmacie
                     return;
                 }
 
-                // Vérifier si l'ID existe déjà
-                foreach (DataGridViewRow row in dgv_ComptePhar.Rows)
+                // Ajouter le pharmacien dans la base de données
+                bool resultat = PharmacienDAL.AjouterPharmacien(
+                    txtIDPhar.Text.Trim(),
+                    txtNomPhar.Text.Trim(),
+                    txtPrePhar.Text.Trim(),
+                    txtLogPhar.Text.Trim(),
+                    txtMDPPhar.Text.Trim(),
+                    txtEmailPhar.Text.Trim()
+                );
+
+                if (resultat)
                 {
-                    if (row.Cells["ID"].Value?.ToString() == txtIDPhar.Text)
-                    {
-                        MessageBox.Show("Cet ID (CIN) existe déjà.", "Erreur",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                    MessageBox.Show("Pharmacien ajouté avec succès dans la base de données!", "Succès",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Recharger la liste des pharmaciens
+                    ChargerPharmaciens();
+
+                    // Vider les champs
+                    ViderChamps();
                 }
-
-                // Vérifier si le login existe déjà
-                foreach (DataGridViewRow row in dgv_ComptePhar.Rows)
-                {
-                    if (row.Cells["Login"].Value?.ToString() == txtLogPhar.Text)
-                    {
-                        MessageBox.Show("Ce login existe déjà.", "Erreur",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                }
-
-                // Ajouter le pharmacien au DataGridView
-                int index = dgv_ComptePhar.Rows.Add();
-                dgv_ComptePhar.Rows[index].Cells["ID"].Value = txtIDPhar.Text;
-                dgv_ComptePhar.Rows[index].Cells["Nom"].Value = txtNomPhar.Text;
-                dgv_ComptePhar.Rows[index].Cells["Prenom"].Value = txtPrePhar.Text;
-                dgv_ComptePhar.Rows[index].Cells["Login"].Value = txtLogPhar.Text;
-                dgv_ComptePhar.Rows[index].Cells["MotDePasse"].Value = txtMDPPhar.Text;
-                dgv_ComptePhar.Rows[index].Cells["Email"].Value = txtEmailPhar.Text;
-
-                MessageBox.Show("Pharmacien ajouté avec succès!", "Succès",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Vider les champs après l'ajout
-                ViderChamps();
             }
             catch (Exception ex)
             {
@@ -140,25 +162,36 @@ namespace Projet_Pharmacie
                     return;
                 }
 
-                // Confirmer la suppression
+                // Récupérer les informations du pharmacien sélectionné
+                string cin = dgv_ComptePhar.SelectedRows[0].Cells["ID"].Value?.ToString();
                 string nomPhar = dgv_ComptePhar.SelectedRows[0].Cells["Nom"].Value?.ToString();
                 string prenomPhar = dgv_ComptePhar.SelectedRows[0].Cells["Prenom"].Value?.ToString();
 
+                // Confirmer la suppression
                 DialogResult result = MessageBox.Show(
-                    $"Voulez-vous vraiment supprimer le pharmacien {nomPhar} {prenomPhar}?",
+                    $"Voulez-vous vraiment supprimer le pharmacien {nomPhar} {prenomPhar}?\n\n" +
+                    $"CIN: {cin}\n\n" +
+                    "Cette action est irréversible!",
                     "Confirmation de suppression",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
                 {
-                    // Supprimer la ligne sélectionnée
-                    dgv_ComptePhar.Rows.RemoveAt(dgv_ComptePhar.SelectedRows[0].Index);
+                    // Supprimer de la base de données
+                    bool supprime = PharmacienDAL.SupprimerPharmacienDefinitif(cin);
 
-                    MessageBox.Show("Pharmacien supprimé avec succès!", "Succès",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (supprime)
+                    {
+                        MessageBox.Show("Pharmacien supprimé avec succès de la base de données!", "Succès",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    ViderChamps();
+                        // Recharger la liste des pharmaciens
+                        ChargerPharmaciens();
+
+                        // Vider les champs
+                        ViderChamps();
+                    }
                 }
             }
             catch (Exception ex)
@@ -171,9 +204,7 @@ namespace Projet_Pharmacie
         // Événement du bouton Annuler
         private void btnAnnulerPhar_Click(object sender, EventArgs e)
         {
-
-                this.Close();
- 
+            this.Close();
         }
 
         // Méthode pour vider tous les champs
@@ -202,6 +233,11 @@ namespace Projet_Pharmacie
                     txtLogPhar.Text = row.Cells["Login"].Value?.ToString();
                     txtMDPPhar.Text = row.Cells["MotDePasse"].Value?.ToString();
                     txtEmailPhar.Text = row.Cells["Email"].Value?.ToString();
+
+                    // Message pour indiquer qu'on peut modifier
+                    MessageBox.Show("Vous pouvez maintenant modifier les informations et cliquer sur 'Ajouter' pour mettre à jour.\n\n" +
+                        "Note: La modification n'est pas encore implémentée. Pour l'instant, vous pouvez supprimer et re-créer.",
+                        "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
@@ -211,10 +247,33 @@ namespace Projet_Pharmacie
             }
         }
 
-        // Événement du chargement du formulaire
-        private void GestionComptes_Load(object sender, EventArgs e)
+        // BONUS: Méthode de recherche (optionnelle)
+        private void RechercherPharmacien(string recherche)
         {
-            txtIDPhar.Focus();
+            try
+            {
+                DataTable dt = PharmacienDAL.RechercherParNom(recherche);
+
+                dgv_ComptePhar.Rows.Clear();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    int index = dgv_ComptePhar.Rows.Add();
+                    dgv_ComptePhar.Rows[index].Cells["ID"].Value = row["ID"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["Nom"].Value = row["Nom"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["Prenom"].Value = row["Prenom"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["Login"].Value = row["Login"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["MotDePasse"].Value = row["MotDePasse"].ToString();
+                    dgv_ComptePhar.Rows[index].Cells["Email"].Value = row["Email"].ToString();
+                }
+
+                this.Text = $"Gestion des Comptes - {dt.Rows.Count} résultat(s)";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de la recherche : {ex.Message}",
+                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

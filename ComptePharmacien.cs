@@ -1,17 +1,20 @@
-﻿using System;
+﻿using Gestion_Pharmacie.Classes;
+using Projet_Pharmacie.DAL;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using Gestion_Pharmacie.Classes;
 
 namespace Projet_Pharmacie
 {
     public partial class ComptePharmacien : Form
     {
-        // Liste des produits en stock
+        // ⚠️ IMPORTANT : On garde cette liste UNIQUEMENT pour compatibilité avec ListeVente
+        // Les données réelles viennent maintenant de la base de données
         public static List<Produit> produitsStock = new List<Produit>();
         public static List<CommandeFournisseur> commandesEnAttente = new List<CommandeFournisseur>();
-        private Produit produitSelectionne = null;
+        private DataRow produitSelectionne = null; // ✅ CHANGÉ : maintenant c'est un DataRow
 
         public ComptePharmacien()
         {
@@ -22,10 +25,15 @@ namespace Projet_Pharmacie
                 // Configuration du DataGridView
                 ConfigurerDataGridView();
 
-                // Initialiser les données de test
-                InitialiserDonnees();
+                // ✅ NOUVEAU : Tester la connexion à la base de données
+                if (!DatabaseConnection.TestConnection())
+                {
+                    MessageBox.Show("❌ Impossible de se connecter à la base de données.\n\nVérifiez votre configuration SQL Server.",
+                        "Erreur de connexion", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
-                // Charger les produits directement
+                // Charger les produits depuis la base de données
                 ChargerTousLesProduits();
             }
             catch (Exception ex)
@@ -56,29 +64,10 @@ namespace Projet_Pharmacie
             dgvStock.ReadOnly = true;
             dgvStock.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvStock.MultiSelect = false;
+            dgvStock.AutoGenerateColumns = true;
         }
 
-        private void InitialiserDonnees()
-        {
-            try
-            {
-                if(ComptePharmacien.produitsStock.Count == 0)
-{
-                    ComptePharmacien.produitsStock.Add(new Produit("P001", StatutP.Medicaments, "Paracétamol", 100, 5.50m, "En stock"));
-                    ComptePharmacien.produitsStock.Add(new Produit("P002", StatutP.Medicaments, "Aspirine", 50, 7.00m, "En stock"));
-                    ComptePharmacien.produitsStock.Add(new Produit("P003", StatutP.Para, "Vitamine C", 75, 12.00m, "En stock"));
-                    ComptePharmacien.produitsStock.Add(new Produit("P004", StatutP.Para, "Crème hydratante", 30, 15.50m, "Stock limité"));
-                    ComptePharmacien.produitsStock.Add(new Produit("P005", StatutP.Medicaments, "Ibuprofène", 80, 6.50m, "En stock"));
-                    ComptePharmacien.produitsStock.Add(new Produit("P006", StatutP.Medicaments, "Sirop contre la toux", 40, 9.00m, "En stock"));
-                    ComptePharmacien.produitsStock.Add(new Produit("P007", StatutP.Para, "Pommade anti-inflammatoire", 25, 11.50m, "Stock limité"));
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur lors de l'initialisation des données : {ex.Message}",
-                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+ 
 
         // ========== CHARGEMENT DES DONNÉES ==========
 
@@ -86,22 +75,69 @@ namespace Projet_Pharmacie
         {
             try
             {
-                // S'assurer que les données existent
-                if (ComptePharmacien.produitsStock.Count == 0)
+                // Charger depuis la base de données
+                DataTable dtProduits = ProduitDAL.GetAllProduits();
+
+                if (dtProduits != null && dtProduits.Rows.Count > 0)
                 {
-                    InitialiserDonnees();
+                    // Lier les données au DataGridView
+                    dgvStock.DataSource = dtProduits;
+
+                    // Personnaliser les colonnes
+                    PersonnaliserColonnes();
+
+                    //Synchroniser avec la liste statique (pour compatibilité)
+                    SynchroniserListeStatique(dtProduits);
                 }
-
-                // Lier les données au DataGridView
-                dgvStock.DataSource = null;
-                dgvStock.DataSource = new System.ComponentModel.BindingList<Produit>(ComptePharmacien.produitsStock);
-
-                // Personnaliser les colonnes
-                PersonnaliserColonnes();
+                else
+                {
+                    MessageBox.Show("Aucun produit trouvé dans la base de données.\n\nAjoutez des produits pour commencer.",
+                        "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    dgvStock.DataSource = null;
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Erreur lors du chargement des produits : {ex.Message}",
+                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Synchroniser la liste statique avec la base de données
+        private void SynchroniserListeStatique(DataTable dtProduits)
+        {
+            try
+            {
+                ComptePharmacien.produitsStock.Clear();
+
+                foreach (DataRow row in dtProduits.Rows)
+                {
+                    // Convertir le type string en StatutP enum
+                    string typeStr = row["TypeProduit"].ToString();
+                    StatutP typeEnum;
+
+                    if (typeStr == "Medicaments")
+                        typeEnum = StatutP.Medicaments;
+                    else if (typeStr == "Para")
+                        typeEnum = StatutP.Para;
+                    else
+                        typeEnum = StatutP.Medicaments; //par défaut 
+
+                    Produit p = new Produit(
+                        row["Reference"].ToString(),
+                        typeEnum,
+                        row["NomProduit"].ToString(),
+                        Convert.ToInt32(row["Quantite"]),
+                        Convert.ToDecimal(row["Prix"]),
+                        row["Statut"].ToString()
+                    );
+
+                    ComptePharmacien.produitsStock.Add(p);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de la synchronisation : {ex.Message}",
                     "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -112,6 +148,10 @@ namespace Projet_Pharmacie
             {
                 if (dgvStock.Columns.Count > 0)
                 {
+                    // Masquer ProduitID
+                    if (dgvStock.Columns["ProduitID"] != null)
+                        dgvStock.Columns["ProduitID"].Visible = false;
+
                     // Personnaliser Référence
                     if (dgvStock.Columns["Reference"] != null)
                     {
@@ -184,23 +224,26 @@ namespace Projet_Pharmacie
                     return;
                 }
 
-                // Rechercher le produit par nom
-                produitSelectionne = ComptePharmacien.produitsStock.FirstOrDefault(p =>
-                    p.NomProduit.ToLower().Contains(nomRecherche.ToLower()));
+                // Rechercher dans la base de données
+                DataTable dtRecherche = ProduitDAL.RechercherProduits(nomRecherche);
 
-                if (produitSelectionne != null)
+                if (dtRecherche != null && dtRecherche.Rows.Count > 0)
                 {
-                    // Afficher uniquement le produit trouvé
-                    dgvStock.DataSource = null;
-                    dgvStock.DataSource = new List<Produit> { produitSelectionne };
+                    // Afficher les résultats
+                    dgvStock.DataSource = dtRecherche;
                     PersonnaliserColonnes();
 
-                    MessageBox.Show($"Produit trouvé : {produitSelectionne.NomProduit}\nStock disponible : {produitSelectionne.Quantite}",
+                    // Sélectionner le premier résultat
+                    produitSelectionne = dtRecherche.Rows[0];
+
+                    MessageBox.Show($"✅ {dtRecherche.Rows.Count} produit(s) trouvé(s) !\n\n" +
+                        $"Produit : {produitSelectionne["NomProduit"]}\n" +
+                        $"Stock disponible : {produitSelectionne["Quantite"]}",
                         "Recherche", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("Produit non trouvé.", "Recherche",
+                    MessageBox.Show("❌ Aucun produit trouvé avec ce nom.", "Recherche",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     produitSelectionne = null;
                     ChargerTousLesProduits();
@@ -241,39 +284,54 @@ namespace Projet_Pharmacie
                     return;
                 }
 
+                // Récupérer la quantité depuis DataRow
+                int quantiteDisponible = Convert.ToInt32(produitSelectionne["Quantite"]);
+
                 // Vérifier si la quantité demandée est disponible
-                if (quantiteDemandee > produitSelectionne.Quantite)
+                if (quantiteDemandee > quantiteDisponible)
                 {
-                    MessageBox.Show($"Quantité insuffisante en stock.\n\nStock disponible : {produitSelectionne.Quantite}\nQuantité demandée : {quantiteDemandee}",
+                    MessageBox.Show($"❌ Quantité insuffisante en stock.\n\n" +
+                        $"Stock disponible : {quantiteDisponible}\n" +
+                        $"Quantité demandée : {quantiteDemandee}",
                         "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
+                // Récupérer les données depuis DataRow
+                string reference = produitSelectionne["Reference"].ToString();
+                string typeStr = produitSelectionne["TypeProduit"].ToString();
+                string nomProduit = produitSelectionne["NomProduit"].ToString();
+                decimal prix = Convert.ToDecimal(produitSelectionne["Prix"]);
+
+                // Convertir le type
+                StatutP typeEnum = (typeStr == "Medicaments") ? StatutP.Medicaments : StatutP.Para;
+
                 // Vérifier si le produit existe déjà dans la liste de vente
-                var produitExistant = ListeVente.ProduitsVente.FirstOrDefault(p =>
-                    p.Reference == produitSelectionne.Reference);
+                var produitExistant = ListeVente.ProduitsVente.FirstOrDefault(p => p.Reference == reference);
 
                 if (produitExistant != null)
                 {
                     // Si le produit existe déjà, augmenter la quantité
                     produitExistant.Quantite += quantiteDemandee;
 
-                    MessageBox.Show($"Quantité mise à jour :\n\n{produitSelectionne.NomProduit}\nNouvelle quantité : {produitExistant.Quantite}",
+                    MessageBox.Show($"✅ Quantité mise à jour :\n\n{nomProduit}\nNouvelle quantité : {produitExistant.Quantite}",
                         "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
                     // Ajouter le nouveau produit à la liste de vente
                     ListeVente.ProduitsVente.Add(new Produit(
-                        produitSelectionne.Reference,
-                        produitSelectionne.TypeProduit,
-                        produitSelectionne.NomProduit,
+                        reference,
+                        typeEnum,
+                        nomProduit,
                         quantiteDemandee,
-                        produitSelectionne.Prix,
+                        prix,
                         "Ajouté à la vente"
                     ));
 
-                    MessageBox.Show($"Produit ajouté à la liste de vente :\n\n{quantiteDemandee} x {produitSelectionne.NomProduit}\nPrix unitaire : {produitSelectionne.Prix:N2} DT",
+                    MessageBox.Show($"✅ Produit ajouté à la liste de vente :\n\n" +
+                        $"{quantiteDemandee} x {nomProduit}\n" +
+                        $"Prix unitaire : {prix:N2} DT",
                         "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
@@ -310,7 +368,7 @@ namespace Projet_Pharmacie
 
                 if (result == DialogResult.OK)
                 {
-                    // La vente a été validée, mettre à jour le stock
+                    // La vente a été validée, mettre à jour le stock dans la BD
                     MettreAJourStockApresVente();
 
                     // Recharger l'affichage
@@ -324,36 +382,49 @@ namespace Projet_Pharmacie
             }
         }
 
+        // Mettre à jour le stock dans la base de données
         private void MettreAJourStockApresVente()
         {
             try
             {
+                bool toutOk = true;
+                List<string> erreurs = new List<string>();
+
                 // Parcourir les produits vendus
                 foreach (var produitVendu in ListeVente.ProduitsVendus)
                 {
-                    // Trouver le produit correspondant dans le stock
-                    var produitStock = ComptePharmacien.produitsStock.FirstOrDefault(p =>
-                        p.Reference == produitVendu.Reference);
+                    // Récupérer d'abord la quantité actuelle depuis la BD
+                    DataRow produitActuel = ProduitDAL.GetProduitByReference(produitVendu.Reference);
 
-                    if (produitStock != null)
+                    if (produitActuel != null)
                     {
-                        // Déduire la quantité vendue du stock
-                        produitStock.Quantite -= produitVendu.Quantite;
+                        int quantiteActuelle = Convert.ToInt32(produitActuel["Quantite"]);
+                        int nouvelleQuantite = quantiteActuelle - produitVendu.Quantite;
 
-                        // Mettre à jour le statut si nécessaire
-                        if (produitStock.Quantite <= 0)
+                        // Mettre à jour dans la base de données
+                        if (!ProduitDAL.ModifierQuantiteProduit(produitVendu.Reference, nouvelleQuantite))
                         {
-                            produitStock.Statut = "Rupture de stock";
-                        }
-                        else if (produitStock.Quantite < 20)
-                        {
-                            produitStock.Statut = "Stock limité";
-                        }
-                        else
-                        {
-                            produitStock.Statut = "En stock";
+                            toutOk = false;
+                            erreurs.Add($"- {produitVendu.NomProduit}");
                         }
                     }
+                    else
+                    {
+                        toutOk = false;
+                        erreurs.Add($"- {produitVendu.NomProduit} (produit introuvable)");
+                    }
+                }
+
+                // Afficher le résultat
+                if (toutOk)
+                {
+                    MessageBox.Show("✅ Stock mis à jour avec succès dans la base de données !",
+                        "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"⚠️ Erreurs lors de la mise à jour du stock :\n\n{string.Join("\n", erreurs)}",
+                        "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 // Vider la liste des produits vendus après mise à jour

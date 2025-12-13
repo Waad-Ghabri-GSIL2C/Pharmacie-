@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GestionFournisseurs));
             this.dgvFournisseurs = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -46,116 +47,132 @@
             // 
             // dgvFournisseurs
             // 
+            this.dgvFournisseurs.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dgvFournisseurs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvFournisseurs.Location = new System.Drawing.Point(108, 63);
             this.dgvFournisseurs.Name = "dgvFournisseurs";
             this.dgvFournisseurs.RowHeadersWidth = 51;
             this.dgvFournisseurs.RowTemplate.Height = 24;
-            this.dgvFournisseurs.Size = new System.Drawing.Size(812, 150);
+            this.dgvFournisseurs.Size = new System.Drawing.Size(1119, 165);
             this.dgvFournisseurs.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(89, 250);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(157, 244);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 16);
+            this.label1.Size = new System.Drawing.Size(94, 18);
             this.label1.TabIndex = 1;
             this.label1.Text = "Nom produit ";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(311, 250);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(379, 244);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(59, 16);
+            this.label2.Size = new System.Drawing.Size(67, 18);
             this.label2.TabIndex = 2;
             this.label2.Text = "Quantité ";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(524, 250);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(592, 244);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(39, 16);
+            this.label3.Size = new System.Drawing.Size(41, 18);
             this.label3.TabIndex = 3;
             this.label3.Text = "Délai";
             // 
             // txtNomProduit
             // 
-            this.txtNomProduit.Location = new System.Drawing.Point(92, 269);
+            this.txtNomProduit.Location = new System.Drawing.Point(160, 265);
             this.txtNomProduit.Name = "txtNomProduit";
             this.txtNomProduit.Size = new System.Drawing.Size(146, 22);
             this.txtNomProduit.TabIndex = 4;
             // 
             // txtQuantite
             // 
-            this.txtQuantite.Location = new System.Drawing.Point(314, 269);
+            this.txtQuantite.Location = new System.Drawing.Point(382, 265);
             this.txtQuantite.Name = "txtQuantite";
             this.txtQuantite.Size = new System.Drawing.Size(146, 22);
             this.txtQuantite.TabIndex = 5;
             // 
             // txtDelai
             // 
-            this.txtDelai.Location = new System.Drawing.Point(527, 269);
+            this.txtDelai.Location = new System.Drawing.Point(595, 265);
             this.txtDelai.Name = "txtDelai";
             this.txtDelai.Size = new System.Drawing.Size(146, 22);
             this.txtDelai.TabIndex = 6;
             // 
             // btnValiderCommande
             // 
-            this.btnValiderCommande.Location = new System.Drawing.Point(763, 250);
+            this.btnValiderCommande.BackColor = System.Drawing.Color.Green;
+            this.btnValiderCommande.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnValiderCommande.ForeColor = System.Drawing.Color.White;
+            this.btnValiderCommande.Location = new System.Drawing.Point(949, 253);
             this.btnValiderCommande.Name = "btnValiderCommande";
-            this.btnValiderCommande.Size = new System.Drawing.Size(176, 44);
+            this.btnValiderCommande.Size = new System.Drawing.Size(176, 42);
             this.btnValiderCommande.TabIndex = 7;
             this.btnValiderCommande.Text = "Valider la commande ";
-            this.btnValiderCommande.UseVisualStyleBackColor = true;
+            this.btnValiderCommande.UseVisualStyleBackColor = false;
             this.btnValiderCommande.Click += new System.EventHandler(this.btnValiderCommande_Click);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(37, 24);
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
+            this.label4.Location = new System.Drawing.Point(37, 27);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(155, 16);
+            this.label4.Size = new System.Drawing.Size(174, 18);
             this.label4.TabIndex = 9;
             this.label4.Text = "Passer une commande : ";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(37, 358);
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
+            this.label5.Location = new System.Drawing.Point(37, 345);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(250, 16);
+            this.label5.Size = new System.Drawing.Size(280, 18);
             this.label5.TabIndex = 10;
             this.label5.Text = "Confirmer la réception de la commande : ";
             // 
             // dgvCommandes
             // 
+            this.dgvCommandes.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dgvCommandes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvCommandes.Location = new System.Drawing.Point(80, 392);
+            this.dgvCommandes.Location = new System.Drawing.Point(108, 379);
             this.dgvCommandes.Name = "dgvCommandes";
             this.dgvCommandes.RowHeadersWidth = 51;
             this.dgvCommandes.RowTemplate.Height = 24;
-            this.dgvCommandes.Size = new System.Drawing.Size(871, 150);
+            this.dgvCommandes.Size = new System.Drawing.Size(1119, 165);
             this.dgvCommandes.TabIndex = 8;
             this.dgvCommandes.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCommandes_CellContentClick);
             // 
             // btn_Annuler
             // 
-            this.btn_Annuler.Location = new System.Drawing.Point(883, 600);
+            this.btn_Annuler.BackColor = System.Drawing.Color.LightGreen;
+            this.btn_Annuler.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_Annuler.ForeColor = System.Drawing.Color.Black;
+            this.btn_Annuler.Location = new System.Drawing.Point(1108, 585);
             this.btn_Annuler.Name = "btn_Annuler";
-            this.btn_Annuler.Size = new System.Drawing.Size(176, 36);
+            this.btn_Annuler.Size = new System.Drawing.Size(176, 42);
             this.btn_Annuler.TabIndex = 11;
             this.btn_Annuler.Text = "Annuler";
-            this.btn_Annuler.UseVisualStyleBackColor = true;
+            this.btn_Annuler.UseVisualStyleBackColor = false;
             this.btn_Annuler.Click += new System.EventHandler(this.btn_Annuler_Click);
             // 
             // GestionFournisseurs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1081, 648);
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.ClientSize = new System.Drawing.Size(1311, 648);
             this.Controls.Add(this.btn_Annuler);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -168,8 +185,10 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dgvFournisseurs);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GestionFournisseurs";
             this.Text = "GestionFournisseurs";
+            this.Load += new System.EventHandler(this.GestionFournisseurs_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvFournisseurs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCommandes)).EndInit();
             this.ResumeLayout(false);

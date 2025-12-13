@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using Gestion_Pharmacie.Classes;
+using Projet_Pharmacie.DAL;
+
 
 namespace Projet_Pharmacie
 {
@@ -89,126 +92,121 @@ namespace Projet_Pharmacie
                 if (confirmation != DialogResult.Yes)
                     return;
 
-                bool stockMisAJour = MettreAJourStock();
+                // Enregistrer dans la base de données
+                bool venteReussie = EnregistrerVentesDansBaseDeDonnees();
 
-                if (stockMisAJour)
+                if (venteReussie)
                 {
-                    MessageBox.Show("Vente validée et stock mis à jour!",
+                    MessageBox.Show("✅ Vente validée avec succès!",
                         "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                    // Vider la liste de vente
                     ListeVente.ProduitsVente.Clear();
+                    ListeVente.ProduitsVendus.Clear();
+
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
                 else
                 {
-                    MessageBox.Show("Erreur lors de la mise à jour du stock!",
+                    MessageBox.Show("❌ Erreur lors de l'enregistrement de la vente.\n\nVeuillez réessayer.",
                         "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de la validation : {ex.Message}",
+                MessageBox.Show($"Erreur lors de la validation : {ex.Message}\n\nStackTrace:\n{ex.StackTrace}",
                     "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private bool MettreAJourStock()
+        /// <summary>
+        /// Enregistre toutes les ventes dans la base de données
+        /// 
+        /// PROCESSUS DE MISE À JOUR DES DONNÉES :
+        /// 1. Pour chaque produit dans la liste de vente :
+        ///    - Récupère le ProduitID depuis la base de données (via la référence)
+        ///    - Vérifie que le stock est suffisant
+        ///    - Enregistre la vente dans la table Ventes
+        /// 2. Le trigger de la base de données met automatiquement à jour le stock
+        /// 3. Utilise des paramètres SQL pour éviter les injections SQL
+        /// 4. Gère les erreurs individuellement pour chaque produit
+        /// </summary>
+        private bool EnregistrerVentesDansBaseDeDonnees()
         {
             try
             {
+                bool toutReussi = true;
+                List<string> erreursDetails = new List<string>();
+
                 foreach (var produitVente in ListeVente.ProduitsVente)
                 {
-                    ListeVente.ProduitsVendus.Add(new Produit(
+                    // Récupérer le ProduitID depuis la base de données
+                    DataRow produitBD = ProduitDAL.GetProduitByReference(produitVente.Reference);
+
+                    if (produitBD == null)
+                    {
+                        toutReussi = false;
+                        erreursDetails.Add($"Produit introuvable : {produitVente.NomProduit}");
+                        continue;
+                    }
+
+                    int produitID = Convert.ToInt32(produitBD["ProduitID"]);
+                    int stockDisponible = Convert.ToInt32(produitBD["Quantite"]);
+
+                    // Vérifier le stock
+                    if (stockDisponible < produitVente.Quantite)
+                    {
+                        toutReussi = false;
+                        erreursDetails.Add($"{produitVente.NomProduit} : Stock insuffisant (Disponible: {stockDisponible}, Demandé: {produitVente.Quantite})");
+                        continue;
+                    }
+
+                    // Enregistrer la vente dans la base de données
+                    bool venteEnregistree = VenteDAL.AjouterVente(
+                        produitID,
                         produitVente.Reference,
-                        produitVente.TypeProduit,
                         produitVente.NomProduit,
+                        produitVente.TypeProduit.ToString(),
                         produitVente.Quantite,
-                        produitVente.Prix,
-                        "Vendu"
-                    ));
+                        produitVente.Prix
+                    );
+
+                    if (!venteEnregistree)
+                    {
+                        toutReussi = false;
+                        erreursDetails.Add($"Échec de l'enregistrement : {produitVente.NomProduit}");
+                    }
+                    else
+                    {
+                        // Ajouter à la liste des produits vendus
+                        ListeVente.ProduitsVendus.Add(new Produit(
+                            produitVente.Reference,
+                            produitVente.TypeProduit,
+                            produitVente.NomProduit,
+                            produitVente.Quantite,
+                            produitVente.Prix,
+                            "Vendu"
+                        ));
+                    }
                 }
 
-                return true;
+                // Afficher les erreurs si nécessaire
+                if (!toutReussi && erreursDetails.Count > 0)
+                {
+                    string messageErreur = "⚠️ Certaines ventes n'ont pas pu être enregistrées :\n\n" +
+                                          string.Join("\n", erreursDetails);
+                    MessageBox.Show(messageErreur, "Attention",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                return toutReussi;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de la mise à jour du stock : {ex.Message}",
+                MessageBox.Show($"Erreur critique lors de l'enregistrement des ventes :\n{ex.Message}",
                     "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
-            }
-        }
-
-        private void btnAnnuler_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                DialogResult result = MessageBox.Show(
-                    "Voulez-vous vraiment annuler cette vente?\n\nLa liste de vente sera vidée.",
-                    "Confirmation",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (result == DialogResult.Yes)
-                {
-                    ListeVente.ProduitsVente.Clear();
-                    this.DialogResult = DialogResult.Cancel;
-                    this.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur : {ex.Message}",
-                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnRetour_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur : {ex.Message}",
-                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnSupprimerProduit_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (dgvListeVente.SelectedRows.Count == 0)
-                {
-                    MessageBox.Show("Veuillez sélectionner un produit à supprimer.",
-                        "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                var produitASupprimer = (Produit)dgvListeVente.SelectedRows[0].DataBoundItem;
-
-                DialogResult result = MessageBox.Show(
-                    $"Voulez-vous supprimer ce produit de la liste?\n\n{produitASupprimer.NomProduit}",
-                    "Confirmation",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (result == DialogResult.Yes)
-                {
-                    ListeVente.ProduitsVente.Remove(produitASupprimer);
-                    ChargerListeVente();
-                    CalculerPrixTotal();
-
-                    MessageBox.Show("Produit supprimé de la liste.",
-                        "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur lors de la suppression : {ex.Message}",
-                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
