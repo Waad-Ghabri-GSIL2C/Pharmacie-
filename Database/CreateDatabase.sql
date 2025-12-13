@@ -3,9 +3,9 @@
 USE master;
 GO
 
--- ========================================
+
 -- SUPPRIMER L'ANCIENNE BASE SI ELLE EXISTE
--- ========================================
+
 IF EXISTS (SELECT name FROM sys.databases WHERE name = N'Projet_Pharmacie')
 BEGIN
     ALTER DATABASE Projet_Pharmacie SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
@@ -14,9 +14,9 @@ BEGIN
 END
 GO
 
--- ========================================
+
 -- CRÉER LA NOUVELLE BASE DE DONNÉES
--- ========================================
+
 CREATE DATABASE Projet_Pharmacie;
 GO
 PRINT '✓ Base de données Projet_Pharmacie créée.';
@@ -25,9 +25,9 @@ GO
 USE Projet_Pharmacie;
 GO
 
--- ========================================
+ 
 -- CRÉATION DES TABLES
--- ========================================
+
 
 -- Table Administrateurs
 CREATE TABLE Administrateurs (
@@ -40,7 +40,7 @@ CREATE TABLE Administrateurs (
 PRINT '✓ Table Administrateurs créée.';
 GO
 
--- Table Pharmaciens (CORRIGÉE)
+-- Table Pharmaciens 
 CREATE TABLE Pharmaciens (
     PharmacienID INT PRIMARY KEY IDENTITY(1,1),
     CIN NVARCHAR(20) UNIQUE NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE Fournisseurs (
 PRINT '✓ Table Fournisseurs créée.';
 GO
 
--- Table Produits (CORRIGÉE)
+-- Table Produits 
 CREATE TABLE Produits (
     ProduitID INT PRIMARY KEY IDENTITY(1,1),
     Reference NVARCHAR(20) UNIQUE NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE Produits (
 PRINT '✓ Table Produits créée.';
 GO
 
--- Table CommandesFournisseurs (CORRIGÉE - adaptée à votre code C#)
+-- Table CommandesFournisseurs 
 CREATE TABLE CommandesFournisseurs (
     CommandeID INT PRIMARY KEY IDENTITY(1,1),
     FournisseurID INT NOT NULL,
@@ -107,7 +107,7 @@ CREATE TABLE CommandesFournisseurs (
 PRINT '✓ Table CommandesFournisseurs créée (adaptée au code C#).';
 GO
 
--- Table Ventes (CORRIGÉE - adaptée à votre code C#)
+-- Table Ventes 
 CREATE TABLE Ventes (
     VenteID INT PRIMARY KEY IDENTITY(1,1),
     DateVente DATETIME DEFAULT GETDATE(),
@@ -123,9 +123,9 @@ CREATE TABLE Ventes (
 PRINT '✓ Table Ventes créée (adaptée au code C#).';
 GO
 
--- ========================================
--- CRÉATION DES TRIGGERS (CORRIGÉS)
--- ========================================
+
+-- CRÉATION DES TRIGGERS 
+
 
 -- Trigger pour mettre à jour le stock après une vente
 CREATE TRIGGER trg_UpdateStockAfterSale
@@ -198,9 +198,9 @@ GO
 PRINT '✓ Trigger trg_UpdateStockAfterCommandeRecue créé.';
 GO
 
--- ========================================
--- CRÉATION DES VUES (CORRIGÉES)
--- ========================================
+
+-- CRÉATION DES VUES 
+
 
 -- Vue pour afficher les produits en stock faible
 CREATE VIEW Vue_ProduitStockFaible AS
