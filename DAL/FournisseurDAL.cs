@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Windows.Forms;
 
 namespace Projet_Pharmacie.DAL
 {
     /// <summary>
-    /// Classe d'accès aux données pour la gestion des Fournisseurs
+    /// Classe d'accès aux données pour la gestion des Fournisseurs (Version SQLite)
     /// </summary>
     public class FournisseurDAL
     {
@@ -43,13 +43,13 @@ namespace Projet_Pharmacie.DAL
             }
 
             string query = @"INSERT INTO Fournisseurs (NomFournisseur, Telephone, Email, Adresse, DateCreation)
-                            VALUES (@NomFournisseur, @Telephone, @Email, @Adresse, GETDATE())";
+                            VALUES (@NomFournisseur, @Telephone, @Email, @Adresse, CURRENT_TIMESTAMP)";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@NomFournisseur", nomFournisseur),
-                new SqlParameter("@Telephone", telephone ?? (object)DBNull.Value),
-                new SqlParameter("@Email", email ?? (object)DBNull.Value),
-                new SqlParameter("@Adresse", adresse ?? (object)DBNull.Value)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@NomFournisseur", nomFournisseur),
+                new SQLiteParameter("@Telephone", string.IsNullOrEmpty(telephone) ? DBNull.Value : (object)telephone),
+                new SQLiteParameter("@Email", string.IsNullOrEmpty(email) ? DBNull.Value : (object)email),
+                new SQLiteParameter("@Adresse", string.IsNullOrEmpty(adresse) ? DBNull.Value : (object)adresse)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -62,8 +62,8 @@ namespace Projet_Pharmacie.DAL
         {
             string query = "DELETE FROM Fournisseurs WHERE FournisseurID = @FournisseurID";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@FournisseurID", fournisseurID)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@FournisseurID", fournisseurID)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -82,12 +82,12 @@ namespace Projet_Pharmacie.DAL
                                 Adresse = @Adresse
                             WHERE FournisseurID = @FournisseurID";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@FournisseurID", fournisseurID),
-                new SqlParameter("@NomFournisseur", nomFournisseur),
-                new SqlParameter("@Telephone", telephone ?? (object)DBNull.Value),
-                new SqlParameter("@Email", email ?? (object)DBNull.Value),
-                new SqlParameter("@Adresse", adresse ?? (object)DBNull.Value)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@FournisseurID", fournisseurID),
+                new SQLiteParameter("@NomFournisseur", nomFournisseur),
+                new SQLiteParameter("@Telephone", string.IsNullOrEmpty(telephone) ? DBNull.Value : (object)telephone),
+                new SQLiteParameter("@Email", string.IsNullOrEmpty(email) ? DBNull.Value : (object)email),
+                new SQLiteParameter("@Adresse", string.IsNullOrEmpty(adresse) ? DBNull.Value : (object)adresse)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -100,8 +100,8 @@ namespace Projet_Pharmacie.DAL
         {
             string query = "SELECT COUNT(*) FROM Fournisseurs WHERE NomFournisseur = @NomFournisseur";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@NomFournisseur", nomFournisseur)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@NomFournisseur", nomFournisseur)
             };
 
             object result = DatabaseConnection.ExecuteScalar(query, parameters);
@@ -122,8 +122,8 @@ namespace Projet_Pharmacie.DAL
                              FROM Fournisseurs 
                              WHERE FournisseurID = @FournisseurID";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@FournisseurID", fournisseurID)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@FournisseurID", fournisseurID)
             };
 
             DataTable dt = DatabaseConnection.ExecuteQuery(query, parameters);
@@ -146,8 +146,8 @@ namespace Projet_Pharmacie.DAL
                                 OR Email LIKE @Recherche
                              ORDER BY NomFournisseur";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Recherche", "%" + recherche + "%")
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Recherche", "%" + recherche + "%")
             };
 
             return DatabaseConnection.ExecuteQuery(query, parameters);

@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 
 namespace Projet_Pharmacie.DAL
 {
     /// <summary>
-    /// Classe d'accès aux données pour les Ventes
+    /// Classe d'accès aux données pour les Ventes (Version SQLite)
     /// Table Ventes : VenteID, DateVente, ProduitID, Reference, NomProduit, TypeProduit, Quantite, PrixUnitaire, Montant
     /// </summary>
     public class VenteDAL
     {
         /// <summary>
         /// Ajoute une vente dans la base de données
-        /// Le trigger SQL met automatiquement à jour le stock
+        /// Le trigger SQLite met automatiquement à jour le stock
         /// </summary>
         public static bool AjouterVente(int produitID, string reference, string nomProduit,
                                        string typeProduit, int quantite, decimal prixUnitaire)
@@ -21,7 +21,7 @@ namespace Projet_Pharmacie.DAL
             {
                 // Vérifier le stock disponible
                 string queryStock = "SELECT Quantite FROM Produits WHERE ProduitID = @ProduitID";
-                SqlParameter[] paramsStock = { new SqlParameter("@ProduitID", produitID) };
+                SQLiteParameter[] paramsStock = { new SQLiteParameter("@ProduitID", produitID) };
 
                 object result = DatabaseConnection.ExecuteScalar(queryStock, paramsStock);
                 int stockActuel = result != null ? Convert.ToInt32(result) : 0;
@@ -45,14 +45,14 @@ namespace Projet_Pharmacie.DAL
                                 VALUES 
                                 (@ProduitID, @Reference, @NomProduit, @TypeProduit, @Quantite, @PrixUnitaire, @Montant)";
 
-                SqlParameter[] parameters = {
-                    new SqlParameter("@ProduitID", produitID),
-                    new SqlParameter("@Reference", reference),
-                    new SqlParameter("@NomProduit", nomProduit),
-                    new SqlParameter("@TypeProduit", typeProduit),
-                    new SqlParameter("@Quantite", quantite),
-                    new SqlParameter("@PrixUnitaire", prixUnitaire),
-                    new SqlParameter("@Montant", montant)
+                SQLiteParameter[] parameters = {
+                    new SQLiteParameter("@ProduitID", produitID),
+                    new SQLiteParameter("@Reference", reference),
+                    new SQLiteParameter("@NomProduit", nomProduit),
+                    new SQLiteParameter("@TypeProduit", typeProduit),
+                    new SQLiteParameter("@Quantite", quantite),
+                    new SQLiteParameter("@PrixUnitaire", prixUnitaire),
+                    new SQLiteParameter("@Montant", montant)
                 };
 
                 bool success = DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -113,7 +113,7 @@ namespace Projet_Pharmacie.DAL
                                 PrixUnitaire,
                                 Montant
                             FROM Ventes
-                            WHERE CAST(DateVente AS DATE) = CAST(GETDATE() AS DATE)
+                            WHERE DATE(DateVente) = DATE('now')
                             ORDER BY DateVente DESC";
 
             return DatabaseConnection.ExecuteQuery(query);
@@ -124,9 +124,9 @@ namespace Projet_Pharmacie.DAL
         /// </summary>
         public static decimal GetTotalVentesAujourdhui()
         {
-            string query = @"SELECT ISNULL(SUM(Montant), 0)
+            string query = @"SELECT IFNULL(SUM(Montant), 0)
                             FROM Ventes
-                            WHERE CAST(DateVente AS DATE) = CAST(GETDATE() AS DATE)";
+                            WHERE DATE(DateVente) = DATE('now')";
 
             object result = DatabaseConnection.ExecuteScalar(query);
             return result != null ? Convert.ToDecimal(result) : 0;
@@ -148,9 +148,9 @@ namespace Projet_Pharmacie.DAL
                             WHERE DateVente >= @DateDebut AND DateVente <= @DateFin
                             ORDER BY DateVente DESC";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@DateDebut", dateDebut),
-                new SqlParameter("@DateFin", dateFin.AddDays(1).AddSeconds(-1))
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@DateDebut", dateDebut.ToString("yyyy-MM-dd HH:mm:ss")),
+                new SQLiteParameter("@DateFin", dateFin.AddDays(1).AddSeconds(-1).ToString("yyyy-MM-dd HH:mm:ss"))
             };
 
             return DatabaseConnection.ExecuteQuery(query, parameters);
@@ -161,14 +161,15 @@ namespace Projet_Pharmacie.DAL
         /// </summary>
         public static DataTable GetProduitsLesPlusVendus(int top = 10)
         {
-            string query = $@"SELECT TOP {top}
+            string query = $@"SELECT 
                                 NomProduit,
                                 TypeProduit,
-                                SUM(Quantite) AS [Quantité Vendue],
-                                SUM(Montant) AS [Chiffre d'Affaires]
+                                SUM(Quantite) AS 'Quantité Vendue',
+                                SUM(Montant) AS 'Chiffre d''Affaires'
                             FROM Ventes
                             GROUP BY NomProduit, TypeProduit
-                            ORDER BY SUM(Quantite) DESC";
+                            ORDER BY SUM(Quantite) DESC
+                            LIMIT {top}";
 
             return DatabaseConnection.ExecuteQuery(query);
         }
@@ -178,8 +179,8 @@ namespace Projet_Pharmacie.DAL
         /// </summary>
         public static bool SupprimerVente(int venteID)
         {
-            SqlConnection conn = null;
-            SqlTransaction transaction = null;
+            SQLiteConnection conn = null;
+            SQLiteTransaction transaction = null;
 
             try
             {
@@ -189,10 +190,10 @@ namespace Projet_Pharmacie.DAL
 
                 // Récupérer les infos de la vente
                 string queryVente = "SELECT ProduitID, Quantite FROM Ventes WHERE VenteID = @VenteID";
-                using (SqlCommand cmd = new SqlCommand(queryVente, conn, transaction))
+                using (SQLiteCommand cmd = new SQLiteCommand(queryVente, conn, transaction))
                 {
                     cmd.Parameters.AddWithValue("@VenteID", venteID);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
                         {
@@ -210,7 +211,7 @@ namespace Projet_Pharmacie.DAL
                                                      END
                                                  WHERE ProduitID = @ProduitID";
 
-                            using (SqlCommand cmdStock = new SqlCommand(queryStock, conn, transaction))
+                            using (SQLiteCommand cmdStock = new SQLiteCommand(queryStock, conn, transaction))
                             {
                                 cmdStock.Parameters.AddWithValue("@Quantite", quantite);
                                 cmdStock.Parameters.AddWithValue("@ProduitID", produitID);
@@ -222,7 +223,7 @@ namespace Projet_Pharmacie.DAL
 
                 // Supprimer la vente
                 string queryDelete = "DELETE FROM Ventes WHERE VenteID = @VenteID";
-                using (SqlCommand cmdDelete = new SqlCommand(queryDelete, conn, transaction))
+                using (SQLiteCommand cmdDelete = new SQLiteCommand(queryDelete, conn, transaction))
                 {
                     cmdDelete.Parameters.AddWithValue("@VenteID", venteID);
                     cmdDelete.ExecuteNonQuery();

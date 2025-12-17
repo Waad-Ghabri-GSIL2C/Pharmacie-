@@ -1,7 +1,9 @@
 ﻿
 
 * Bases de données : 
-- On a utilisé SQL Server Management Studio comme SGBD 
+- Nous avons utilisé SQLite comme SGBD 
+- Nous avons installé le package System.Data.SQLite
+- Nous avons ajouté des multi-utilisateurs : Chaque administrateur possède sa propre base de données 
 
 -----------------------------------------------------------------------------------------------------------------------------
 * Architechture globale 
@@ -13,90 +15,121 @@ Couche DAL
     ↓ utilise
 DatabaseConnection.cs
     ↓ exécute
-Base de données SQL Server
+Base de données SQLite
 
 ------------------------------------------------------------------------------------------------------------------------------
+* Structure des fichiers de base de données :
 
-* Connexion à la base de données : 
-- On a utilisé une classe DatabaseConnection qui gère toute la communication avec SQL Server.
-- Elle contient :
-     • La connection string (ligne 20-23) qui dit où est la base de données ("Data Source=localhost\SQLEXPRESS;"    
-"Initial Catalog=Projet_Pharmacie;" "Integrated Security=True;").
+- Pharmacie_Main.db : Contient uniquement la table Administrateurs (authentification)
+- Pharmacie_[login].db : Une base dédiée par administrateur avec ses données
 
-     • GetConnection() → Crée et retourne une connexion SQL (Utilisée par toutes les autres méthodes)
+- Exemple : Pharmacie_ghof.db, Pharmacie_lobna.db
+Contient : Produits, Fournisseurs, Pharmaciens, Ventes, Commandes
 
-     • TestConnection() → Teste si la connexion fonctionne (Utile au démarrage de l'application)
+- Emplacement des fichiers : bin/Debug/
+----------------------------------------------------------------------------------------------------------------
+* Données par défaut
+Lors de la création d'une nouvelle base admin, on insère automatiquement :
 
-     • ExecuteQuery() pour lire des données (SELECT)
+4 fournisseurs tunisiens (Galenika, Pharma Distribution, MediSupply, Import Santé Plus)
+5 produits de test avec différents statuts (En stock, Stock limité, Rupture)
+1 pharmacien (Login: fatma.benali / Mot de passe: pharma123)
 
-     • ExecuteNonQuery() pour ajouter/modifier/supprimer des données (INSERT/UPDATE/DELETE)
+* Méthode bonus : AjouterDonneesDeTest()
+Permet d'ajouter ces données à une base existante sans la recréer.
+-------------------------------------------------------------------------------------------------------------------
 
-     •ExecuteScalar()  pour récupérer UNE SEULE valeur
+* Connexion à la base de données :
 
-     •Gestion d'erreurs : Try-catch avec MessageBox pour informer l'utilisateur en cas d'échec de connexion
+- Nous avons utilisé une classe DatabaseConnection qui gère toute la communication avec SQLite.
+Elle contient :
+1. Gestion des chemins de base de données
+   private static readonly string mainDbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Pharmacie_Main.db");
 
+     - mainDbPath : Base principale pour l'authentification
+     - currentDbPath : Base de l'administrateur connecté (ex: Pharmacie_ghof.db)
 
+2. Connection String
+   string connectionString = $"Data Source={dbPath};Version=3;";
 
-    
-- Toutes les autres classes (ProduitDAL, VenteDAL ..) utilisent cette classe pour communiquer avec SQL Server.
+     - Data Source : Chemin vers le fichier .db
+     - Version=3 : Version de SQLite
 
-----------------------------------------------------------------------------------------------------------------------
+3. Méthodes principales
+- GetConnection() → Crée et retourne une connexion SQLite
 
-* Comment on charge les données depuis la base ?
+Utilisée par toutes les autres méthodes
+Crée automatiquement la base si elle n'existe pas
 
-- Chaque classe DAL possède une méthode GetAll[Entité]() 
-  Exemple : ProduitDAL.GetAllProduits()
-  
-- Cette méthode :
-  • Exécute une requête SELECT pour récupérer toutes les lignes
-  • Utilise DatabaseConnection.ExecuteQuery(query)
-  • Retourne un DataTable contenant les résultats
+- TestConnection() → Teste si la connexion fonctionne
 
-- Dans l'interface (ex: GestionStock.cs) :
-  • Méthode ChargerStock() qui appelle ProduitDAL.GetAllProduits()
-  • Lie les données au DataGridView : dgv_GS.DataSource = dt;
-  • Cette méthode est appelée :
-    - Au chargement du formulaire (Form_Load)
-    - Après chaque ajout/modification/suppression
-    - Pour rafraîchir l'affichage après une recherche
+Utile au démarrage de l'application
 
-Exemple de code :
-  DataTable dt = ProduitDAL.GetAllProduits();
-  dgv_GS.DataSource = dt;
-  
+- ExecuteQuery() → Pour lire des données (SELECT)
 
-----------------------------------------------------------------------------------------------------------------------
+Retourne un DataTable
+Utilisée pour afficher les listes
 
- * Comment on met à jour les données ?
- - Chaque classe DAL utilise DatabaseConnection.ExecuteNonQuery() pour modifier la base de données.
- Exemple : ProduitDAL.cs : 
+- ExecuteNonQuery() → Pour ajouter/modifier/supprimer (INSERT/UPDATE/DELETE)
 
- -- Ajouter un produit : 
-    •Construit une requête INSERT INTO Produits
-    •Utilise des paramètres : @Reference, @TypeProduit, @NomProduit ..
-    •Appelle DatabaseConnection.ExecuteNonQuery(query, parameters)
-    •Retourne true si réussi, false sinon.
+Retourne true si réussi, false sinon
+Utilisée pour toutes les modifications
 
- -- Modifier le prix :
-    •Construit une requête  UPDATE Produits SET Prix = @NouveauPrix WHERE Reference = @Reference
-    •Met aussi à jour la date de modification automatiquement 
-..
+- ExecuteScalar() → Pour récupérer UNE SEULE valeur
 
- - Modifications et mises à jour dans les codes des interfaces (.cs) 
- Exemple : GestionStock.cs : 
-   •L'utilisateur remplit les champs (TextBox) et clique sur un bouton .
-   •Validation des données (vérification des champs vides, format)
-   •Appel de la méthode DAL correspondante (ex: ProduitDAL.ModifierPrixProduit())
-   •La méthode DAL appelle DatabaseConnection.ExecuteNonQuery() avec la requête SQL et les paramètres
-   •Rafraîchissement du DataGridView via ChargerStock() pour afficher les changements
-  
-----------------------------------------------------------------------------------------------------------------------
+Exemple : COUNT(*), SUM(Montant), vérifier si une référence existe
 
-* Comment effectuer une recherche ?
-Exemple : ProduitDAL.cs :
- - Méthdode dans DAL : RechercherProduits(string nomProduit) dans ProduitDAL
- - Requête SQL avec LIKE : WHERE NomProduit LIKE @NomProduit
- - Retour des résultats : ExecuteQuery() retourne un DataTable qui est lié au DataGridView
- - Méthodes additionnelles : GetProduitByReference() pour recherche exacte, ReferenceExiste() pour vérification .
+- SetCurrentAdmin(string login) → Définit l'admin connecté
+
+Charge ou crée sa base de données personnelle
+Appelée après authentification réussie
+
+- ResetConnection() → Réinitialise la connexion (déconnexion)
+
+4. Gestion d'erreurs
+Try-catch avec MessageBox pour informer l'utilisateur
 
 
+5. Initialisation automatique
+
+InitialiserBaseDeDonneesPrincipale() : Crée la table Administrateurs + admin par défaut
+        ↓
+InitialiserBaseDeDonneesAdmin() : Crée toutes les tables + données de test pour chaque admin
+
+Tables : Produits, Pharmaciens, Fournisseurs, CommandesFournisseurs, Ventes
+Triggers : Mise à jour automatique des stocks après ventes/commandes
+Données par défaut : 4 fournisseurs, 5 produits, 1 pharmacien
+
+-----------------------------------------------------------------------------------------------------------------
+* Comment on Charge les Données depuis la Base ?
+
+L'interface appelle une méthode DAL qui exécute une requête SELECT via DatabaseConnection.ExecuteQuery() 
+et retourne un DataTable. 
+
+Ce DataTable est ensuite lié au DataGridView pour afficher les données à l'utilisateur.
+
+-----------------------------------------------------------------------------------------------------------------
+* Comment on effectue une recherche ?
+
+L'interface capte la saisie de l'utilisateur et appelle une méthode DAL qui exécute une requête SELECT 
+avec WHERE NomProduit LIKE '%texte%' pour une recherche partielle. 
+
+Les résultats sont retournés dans un DataTable et affichés dans le DataGridView.
+
+---------------------------------------------------------------------------------------------------------------
+
+* Résumé du Flux de Données :
+
+Utilisateur → Interface (Forms)
+                ↓
+            Validation
+                ↓
+            DAL (FournisseurDAL, ProduitDAL...)
+                ↓
+            DatabaseConnection
+                ↓
+            SQLite (.db)
+                ↓
+            Retour DataTable
+                ↓
+            Affichage DataGridView

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Windows.Forms;
 
 namespace Projet_Pharmacie.DAL
 {
     /// <summary>
-    /// Classe d'accès aux données pour la gestion des pharmaciens
+    /// Classe d'accès aux données pour la gestion des pharmaciens (Version SQLite)
     /// Correspond à la table Pharmaciens de votre base de données
     /// </summary>
     public class PharmacienDAL
@@ -56,15 +56,15 @@ namespace Projet_Pharmacie.DAL
             }
 
             string query = @"INSERT INTO Pharmaciens (CIN, Nom, Prenom, Login, MotDePasse, Email, DateCreation, Actif)
-                            VALUES (@CIN, @Nom, @Prenom, @Login, @MotDePasse, @Email, GETDATE(), 1)";
+                            VALUES (@CIN, @Nom, @Prenom, @Login, @MotDePasse, @Email, CURRENT_TIMESTAMP, 1)";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@CIN", cin),
-                new SqlParameter("@Nom", nom),
-                new SqlParameter("@Prenom", prenom),
-                new SqlParameter("@Login", login),
-                new SqlParameter("@MotDePasse", motDePasse),
-                new SqlParameter("@Email", email)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@CIN", cin),
+                new SQLiteParameter("@Nom", nom),
+                new SQLiteParameter("@Prenom", prenom),
+                new SQLiteParameter("@Login", login),
+                new SQLiteParameter("@MotDePasse", motDePasse),
+                new SQLiteParameter("@Email", email)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -78,8 +78,8 @@ namespace Projet_Pharmacie.DAL
             // On ne supprime pas vraiment, on désactive le pharmacien
             string query = "UPDATE Pharmaciens SET Actif = 0 WHERE CIN = @CIN";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@CIN", cin)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@CIN", cin)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -92,8 +92,8 @@ namespace Projet_Pharmacie.DAL
         {
             string query = "DELETE FROM Pharmaciens WHERE CIN = @CIN";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@CIN", cin)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@CIN", cin)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -113,13 +113,13 @@ namespace Projet_Pharmacie.DAL
                                 Email = @Email
                             WHERE CIN = @CIN";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@CIN", cin),
-                new SqlParameter("@Nom", nom),
-                new SqlParameter("@Prenom", prenom),
-                new SqlParameter("@Login", login),
-                new SqlParameter("@MotDePasse", motDePasse),
-                new SqlParameter("@Email", email)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@CIN", cin),
+                new SQLiteParameter("@Nom", nom),
+                new SQLiteParameter("@Prenom", prenom),
+                new SQLiteParameter("@Login", login),
+                new SQLiteParameter("@MotDePasse", motDePasse),
+                new SQLiteParameter("@Email", email)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -132,8 +132,8 @@ namespace Projet_Pharmacie.DAL
         {
             string query = "SELECT COUNT(*) FROM Pharmaciens WHERE CIN = @CIN AND Actif = 1";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@CIN", cin)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@CIN", cin)
             };
 
             object result = DatabaseConnection.ExecuteScalar(query, parameters);
@@ -147,8 +147,8 @@ namespace Projet_Pharmacie.DAL
         {
             string query = "SELECT COUNT(*) FROM Pharmaciens WHERE Login = @Login AND Actif = 1";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Login", login)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Login", login)
             };
 
             object result = DatabaseConnection.ExecuteScalar(query, parameters);
@@ -172,8 +172,8 @@ namespace Projet_Pharmacie.DAL
                              FROM Pharmaciens 
                              WHERE CIN = @CIN AND Actif = 1";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@CIN", cin)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@CIN", cin)
             };
 
             return DatabaseConnection.ExecuteQuery(query, parameters);
@@ -197,8 +197,8 @@ namespace Projet_Pharmacie.DAL
                              WHERE (Nom LIKE @Recherche OR Prenom LIKE @Recherche) AND Actif = 1
                              ORDER BY Nom, Prenom";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Recherche", "%" + recherche + "%")
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Recherche", "%" + recherche + "%")
             };
 
             return DatabaseConnection.ExecuteQuery(query, parameters);
@@ -213,9 +213,9 @@ namespace Projet_Pharmacie.DAL
                             FROM Pharmaciens 
                             WHERE Login = @Login AND MotDePasse = @MotDePasse AND Actif = 1";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Login", login),
-                new SqlParameter("@MotDePasse", motDePasse)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Login", login),
+                new SQLiteParameter("@MotDePasse", motDePasse)
             };
 
             object result = DatabaseConnection.ExecuteScalar(query, parameters);

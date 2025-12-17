@@ -172,7 +172,7 @@ namespace Projet_Pharmacie
                 // Lier les données
                 dgvCommandes.DataSource = dt;
 
-                
+
             }
             catch (Exception ex)
             {

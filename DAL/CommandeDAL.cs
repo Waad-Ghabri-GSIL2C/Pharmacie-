@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Windows.Forms;
 
 namespace Projet_Pharmacie.DAL
 {
     /// <summary>
-    /// Classe d'accès aux données pour la gestion des Commandes Fournisseurs
+    /// Classe d'accès aux données pour la gestion des Commandes Fournisseurs (Version SQLite)
     /// </summary>
     public class CommandeDAL
     {
@@ -65,14 +65,14 @@ namespace Projet_Pharmacie.DAL
             string query = @"INSERT INTO CommandesFournisseurs 
                             (FournisseurID, ProduitID, NomProduit, Quantite, Delai, DateCommande, Statut)
                             VALUES 
-                            (@FournisseurID, @ProduitID, @NomProduit, @Quantite, @Delai, GETDATE(), 'En attente')";
+                            (@FournisseurID, @ProduitID, @NomProduit, @Quantite, @Delai, CURRENT_TIMESTAMP, 'En attente')";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@FournisseurID", fournisseurID),
-                new SqlParameter("@ProduitID", produitID),
-                new SqlParameter("@NomProduit", nomProduit),
-                new SqlParameter("@Quantite", quantite),
-                new SqlParameter("@Delai", delai)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@FournisseurID", fournisseurID),
+                new SQLiteParameter("@ProduitID", produitID),
+                new SQLiteParameter("@NomProduit", nomProduit),
+                new SQLiteParameter("@Quantite", quantite),
+                new SQLiteParameter("@Delai", delai)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -88,11 +88,11 @@ namespace Projet_Pharmacie.DAL
             {
                 string query = @"UPDATE CommandesFournisseurs 
                                 SET Statut = 'Reçue', 
-                                    DateReception = GETDATE()
+                                    DateReception = CURRENT_TIMESTAMP
                                 WHERE CommandeID = @CommandeID";
 
-                SqlParameter[] parameters = {
-                    new SqlParameter("@CommandeID", commandeID)
+                SQLiteParameter[] parameters = {
+                    new SQLiteParameter("@CommandeID", commandeID)
                 };
 
                 bool resultat = DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -101,7 +101,7 @@ namespace Projet_Pharmacie.DAL
                 {
                     MessageBox.Show(
                         "✅ Commande marquée comme reçue!\n" +
-                        "✅ Le stock a été automatiquement mis à jour grâce au trigger SQL!",
+                        "✅ Le stock a été automatiquement mis à jour grâce au trigger SQLite!",
                         "Succès",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
@@ -124,8 +124,8 @@ namespace Projet_Pharmacie.DAL
         {
             string query = "DELETE FROM CommandesFournisseurs WHERE CommandeID = @CommandeID";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@CommandeID", commandeID)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@CommandeID", commandeID)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -151,8 +151,8 @@ namespace Projet_Pharmacie.DAL
                              INNER JOIN Fournisseurs F ON CF.FournisseurID = F.FournisseurID
                              WHERE CF.CommandeID = @CommandeID";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@CommandeID", commandeID)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@CommandeID", commandeID)
             };
 
             DataTable dt = DatabaseConnection.ExecuteQuery(query, parameters);
@@ -178,8 +178,8 @@ namespace Projet_Pharmacie.DAL
                              WHERE CF.FournisseurID = @FournisseurID
                              ORDER BY CF.DateCommande DESC";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@FournisseurID", fournisseurID)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@FournisseurID", fournisseurID)
             };
 
             return DatabaseConnection.ExecuteQuery(query, parameters);
@@ -207,12 +207,12 @@ namespace Projet_Pharmacie.DAL
                                 CF.Quantite,
                                 CF.Delai,
                                 CF.DateCommande,
-                                DATEDIFF(day, CF.DateCommande, GETDATE()) AS JoursEcoules,
-                                (DATEDIFF(day, CF.DateCommande, GETDATE()) - CF.Delai) AS JoursRetard
+                                CAST((julianday('now') - julianday(CF.DateCommande)) AS INTEGER) AS JoursEcoules,
+                                CAST((julianday('now') - julianday(CF.DateCommande)) AS INTEGER) - CF.Delai AS JoursRetard
                              FROM CommandesFournisseurs CF
                              INNER JOIN Fournisseurs F ON CF.FournisseurID = F.FournisseurID
                              WHERE CF.Statut = 'En attente' 
-                               AND DATEDIFF(day, CF.DateCommande, GETDATE()) > CF.Delai
+                               AND CAST((julianday('now') - julianday(CF.DateCommande)) AS INTEGER) > CF.Delai
                              ORDER BY JoursRetard DESC";
 
             return DatabaseConnection.ExecuteQuery(query);

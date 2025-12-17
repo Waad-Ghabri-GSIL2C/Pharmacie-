@@ -67,7 +67,7 @@ namespace Projet_Pharmacie
             dgvStock.AutoGenerateColumns = true;
         }
 
- 
+
 
         // ========== CHARGEMENT DES DONNÉES ==========
 

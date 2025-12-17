@@ -1,20 +1,93 @@
-﻿
-- L'administrateur est le seul à avoir le droit de créer un compte 
-- Après connexion , il peut accéder à 3 fonctionnalités ( Login : admin / Mot de passe : admin123 )
-   * Gestion des comptes : ou il peut ajouter / supprimer un pharmacien 
-   * Gestion du stock : ou il peut consulter le stock , ajouter un nouveau produit , modifier le prix d'un produit 
-   ou totalement supprimer un produit .
-   * Gestion des fournisseurs : ou il peut consulter la liste des fournisseurs , passer une commande et changer 
-   l'état d'une commande (en attente --> reçue) et par suite le stock sera mis à jour automatiquement .
+﻿Fonctionnement de l'application de Gestion de Pharmacie :
 
--------------------------------------------------------------------------------------------------------------------------------
+++ REMARQUE : Après l'execution , il faut se connecter en tant qu'administrateur puis créer un compte pharmacien 
+ou utiliser le compte du test ( le pharmacien ne peut pas se connecter pas sauf si l'administrateur 
+se connecte à son compte car les tables ne sont créées qu'après la connexion au compte admin) .
 
- ++ Remarque : L’accès du pharmacien au système est conditionné par la création préalable de son compte par l’administrateur, 
- qui lui attribue un identifiant et un mot de passe.
+----------------------------------------------------------------------------------------------------------------
 
- -------------------------------------------------------------------------------------------------------------------------------
+ESPACE ADMINISTRATEUR
 
-- Le pharmacien peut se connecter à partir du compte fourni par l'administrateur 
-- Il peut consulter le stock , rechercher des produits pour les ajouter dans la liste de vente (ordonnance)
-et afficher la liste de vente .
-- Il peut après valider cette liste de vente et par suite le stock sera mis à jour automatiquement .
+- L'administrateur est le seul à avoir le droit de créer des comptes et possède un accès complet à toutes 
+  les fonctionnalités.
+
+- Après connexion, il accède à 3 espaces principaux :
+
+1- Gestion des Comptes Pharmaciens :
+*Fonctionnalités :
+- Ajouter un pharmacien : Créer un nouveau compte avec CIN, nom, prénom, login et mot de passe
+- Supprimer un pharmacien : Retirer définitivement un compte
+- Consulter la liste : Voir tous les pharmaciens enregistrés
+- Rechercher : Trouver un pharmacien par nom ou CIN
+
+* Remarque : L'accès du pharmacien au système est conditionné par la création préalable de son compte par 
+l'administrateur, qui lui attribue un login et un mot de passe.
+
+*Compte pharmacien de test :
+- Login : fatma.benali
+- Mot de passe : pharma123
+
+
+
+2- Gestion du Stock :
+*Fonctionnalités :
+- Consulter le stock: Visualiser tous les produits avec leur statut (En stock / Stock limité / Rupture)
+- Ajouter un nouveau produit: Enregistrer un produit avec référence, type, nom, quantité et prix .
+- Modifier le prix : Changer le prix unitaire d'un produit existant.
+- Supprimer un produit : Retirer définitivement un produit du stock.
+- Rechercher : Trouver des produits par nom ou référence
+
+*Statuts automatiques :
+- En stock : Quantité > Seuil
+- Stock limité : 0 < Quantité ≤ Seuil
+- Rupture : Quantité = 0
+
+*Produits de test pré-enregistrés :
+1. Paracétamol 500mg (En stock)
+2. Ibuprofène 400mg (Stock limité)
+3. Amoxicilline 1g (Rupture)
+4. Crème hydratante (En stock)
+5. Thermomètre digital (En stock)
+
+
+
+3️- Gestion des Fournisseurs:
+*Fonctionnalités :
+- Consulter la liste des fournisseurs : Voir tous les fournisseurs avec leurs coordonnées.
+- Passer une commande: Commander un produit auprès d'un fournisseur avec quantité et délai
+- Changer l'état d'une commande: Marquer une commande comme "Reçue"
+- Mise à jour automatique du stock : Quand une commande passe de "En attente" → "Reçue", le stock est automatiquement incrémenté.
+
+*Fournisseurs de test pré-enregistrés :
+1. Laboratoires Galenika - Tunis (Médicaments génériques, antibiotiques)
+2. Pharma Distribution - Ariana (Matériel médical, équipements)
+3. MediSupply Tunisia - Sousse (Produits parapharmaceutiques, cosmétiques)
+4. Import Santé Plus - Sfax (Médicaments importés, vaccins)
+
+-------------------------------------------------------------------------------------------------------------
+
+ESPACE PHARMACIEN
+
+- Connexion Pharmacien :Le pharmacien utilise les identifiants fournis par l'administrateur 
+  lors de la création de son compte.
+- Le pharmacien a un accès limité aux fonctionnalités de vente uniquement.
+*Fonctionnalités Disponibles:
+
+1- Consultation du Stock 
+2- Gestion des Ventes (Ordonnance) : 
+   - Rechercher un produit dans le stock ( après avoir indiqué son nom et la quantité voulue)
+   - Ajouter à la liste de vente (ordonnance) 
+   - Le produit est ajouté à la liste temporaire
+   - Afficher la liste de vente : Voir tous les produits ajoutés avec quantités et montants
+   -Valider la vente : Confirmer la transaction
+
+* Mise à Jour Automatique du Stock:
+Lorsque le pharmacien valide une vente :
+- La vente est enregistrée dans la base de données
+- Le stock est automatiquement mis à jour grâce aux triggers SQLite
+-  Les quantités sont déduites
+-  Les statuts sont recalculés (En stock → Stock limité → Rupture)
+
+
+
+Bon test ! 🎉**

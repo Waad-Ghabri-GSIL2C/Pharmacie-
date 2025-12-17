@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
-using Projet_Pharmacie.DAL;  
+using Projet_Pharmacie.DAL;
 
 namespace Projet_Pharmacie
 {
@@ -22,7 +22,7 @@ namespace Projet_Pharmacie
         {
             try
             {
-                DataTable dt = ProduitDAL.GetAllProduits(); 
+                DataTable dt = ProduitDAL.GetAllProduits();
                 dgv_GS.DataSource = dt;
 
                 // Personnaliser les en-têtes des colonnes

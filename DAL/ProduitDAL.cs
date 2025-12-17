@@ -1,13 +1,11 @@
-﻿using Projet_Pharmacie.DAL;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 
 namespace Projet_Pharmacie.DAL
 {
     /// <summary>
-    /// Classe d'accès aux données pour les Produits
+    /// Classe d'accès aux données pour les Produits (Version SQLite)
     /// </summary>
     public class ProduitDAL
     {
@@ -33,8 +31,8 @@ namespace Projet_Pharmacie.DAL
                             FROM Produits 
                             WHERE Reference = @Reference";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Reference", reference)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Reference", reference)
             };
 
             DataTable dt = DatabaseConnection.ExecuteQuery(query, parameters);
@@ -53,13 +51,13 @@ namespace Projet_Pharmacie.DAL
                                          WHEN @Quantite > 0 THEN 'Stock limité' 
                                          ELSE 'Rupture' END)";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Reference", reference),
-                new SqlParameter("@TypeProduit", typeProduit),
-                new SqlParameter("@NomProduit", nomProduit),
-                new SqlParameter("@Quantite", quantite),
-                new SqlParameter("@Prix", prix),
-                new SqlParameter("@Seuil", seuil)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Reference", reference),
+                new SQLiteParameter("@TypeProduit", typeProduit),
+                new SQLiteParameter("@NomProduit", nomProduit),
+                new SQLiteParameter("@Quantite", quantite),
+                new SQLiteParameter("@Prix", prix),
+                new SQLiteParameter("@Seuil", seuil)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -72,12 +70,12 @@ namespace Projet_Pharmacie.DAL
         {
             string query = @"UPDATE Produits 
                             SET Prix = @NouveauPrix, 
-                                DerniereModification = GETDATE()
+                                DerniereModification = CURRENT_TIMESTAMP
                             WHERE Reference = @Reference";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Reference", reference),
-                new SqlParameter("@NouveauPrix", nouveauPrix)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Reference", reference),
+                new SQLiteParameter("@NouveauPrix", nouveauPrix)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -95,12 +93,12 @@ namespace Projet_Pharmacie.DAL
                                     WHEN @NouvelleQuantite <= Seuil AND @NouvelleQuantite > 0 THEN 'Stock limité'
                                     ELSE 'Rupture'
                                 END,
-                                DerniereModification = GETDATE()
+                                DerniereModification = CURRENT_TIMESTAMP
                             WHERE Reference = @Reference";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Reference", reference),
-                new SqlParameter("@NouvelleQuantite", nouvelleQuantite)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Reference", reference),
+                new SQLiteParameter("@NouvelleQuantite", nouvelleQuantite)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -113,8 +111,8 @@ namespace Projet_Pharmacie.DAL
         {
             string query = "DELETE FROM Produits WHERE Reference = @Reference";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Reference", reference)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Reference", reference)
             };
 
             return DatabaseConnection.ExecuteNonQuery(query, parameters);
@@ -131,8 +129,8 @@ namespace Projet_Pharmacie.DAL
                             WHERE NomProduit LIKE @NomProduit
                             ORDER BY NomProduit";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@NomProduit", "%" + nomProduit + "%")
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@NomProduit", "%" + nomProduit + "%")
             };
 
             return DatabaseConnection.ExecuteQuery(query, parameters);
@@ -143,7 +141,11 @@ namespace Projet_Pharmacie.DAL
         /// </summary>
         public static DataTable GetProduitsStockFaible()
         {
-            string query = "SELECT * FROM Vue_ProduitStockFaible ORDER BY Quantite";
+            string query = @"SELECT ProduitID, Reference, TypeProduit, NomProduit, 
+                            Quantite, Prix, Seuil, Statut 
+                            FROM Produits 
+                            WHERE Quantite <= Seuil 
+                            ORDER BY Quantite";
             return DatabaseConnection.ExecuteQuery(query);
         }
 
@@ -154,8 +156,8 @@ namespace Projet_Pharmacie.DAL
         {
             string query = "SELECT COUNT(*) FROM Produits WHERE Reference = @Reference";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@Reference", reference)
+            SQLiteParameter[] parameters = {
+                new SQLiteParameter("@Reference", reference)
             };
 
             object result = DatabaseConnection.ExecuteScalar(query, parameters);

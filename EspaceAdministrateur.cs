@@ -20,7 +20,6 @@ namespace Projet_Pharmacie
             InitialiserMotDePasse();
         }
 
-
         private void InitialiserMotDePasse()
         {
             // Configurer le TextBox du mot de passe pour masquer les caractères
@@ -41,13 +40,21 @@ namespace Projet_Pharmacie
                 return;
             }
 
-            // VÉRIFICATION DANS LA BASE DE DONNÉES
+            // VÉRIFICATION DANS LA BASE DE DONNÉES PRINCIPALE
             bool connexionReussie = Projet_Pharmacie.DAL.AdministrateurDAL.VerifierConnexion(login, motDePasse);
 
             if (connexionReussie)
             {
-                MessageBox.Show("✅ Connexion réussie ! Bienvenue Administrateur.",
-                    "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // ✅ NOUVEAU : Définir l'admin connecté et charger SA base de données personnelle
+                DatabaseConnection.SetCurrentAdmin(login);
+
+                MessageBox.Show(
+                    $"✅ Connexion réussie ! Bienvenue {login}.\n\n" +
+                    $"📁 Votre base de données personnelle a été chargée.\n" +
+                    $"💾 Fichier: Pharmacie_{login}.db",
+                    "Succès",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
 
                 // Ouvrir l'interface admin
                 CompteAdministrateur compteAdministrateur = new CompteAdministrateur();
@@ -64,14 +71,13 @@ namespace Projet_Pharmacie
                 BoxMDP.Focus();
             }
         }
+
         private void BoxLogin_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void BoxMDP_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void BtnCompte_Click(object sender, EventArgs e)
@@ -79,14 +85,12 @@ namespace Projet_Pharmacie
             NouveauCompteAdmin nouveauCompte = new NouveauCompteAdmin();
             nouveauCompte.Show();
 
-            
             this.Hide();
             return;
         }
 
         private void EspaceAdministrateur_Load(object sender, EventArgs e)
         {
-
         }
     }
 }
