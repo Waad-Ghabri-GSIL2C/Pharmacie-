@@ -1,0 +1,40 @@
+name: Build & SLSA Provenance
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  id-token: write
+  attestations: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restaurer les packages NuGet
+        run: nuget restore "Projet Pharmacie.sln"
+
+      - name: Compiler le projet
+        run: msbuild "Projet Pharmacie.sln" /p:Configuration=Release
+
+      - name: Afficher les fichiers générés
+        shell: powershell
+        run: Get-ChildItem -Recurse -Filter "*.exe" | Select-Object FullName
+
+      - name: Générer l'attestation SLSA
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: "Projet Pharmacie/bin/Release/Projet Pharmacie.exe"
