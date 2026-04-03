@@ -38,7 +38,7 @@ jobs:
         run: dotnet tool install --global CycloneDX
 
       - name: Générer le SBOM
-        run: dotnet CycloneDX "Projet Pharmacie.csproj" -o ./sbom -j
+        run: dotnet CycloneDX "Projet Pharmacie.csproj" -o ./sbom
 
       - name: Uploader le SBOM
         uses: actions/upload-artifact@v4
