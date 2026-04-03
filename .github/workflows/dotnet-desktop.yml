@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SBOM
-          path: ./sbom/bom.json
+          path: ./sbom/bom.xml
 
       - name: Générer l'attestation SLSA
         uses: actions/attest-build-provenance@v2
