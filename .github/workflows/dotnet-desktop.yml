@@ -34,6 +34,18 @@ jobs:
         shell: powershell
         run: Get-ChildItem -Recurse -Filter "*.exe" | Select-Object FullName
 
+      - name: Installer CycloneDX
+        run: dotnet tool install --global CycloneDX
+
+      - name: Générer le SBOM
+        run: dotnet CycloneDX "Projet Pharmacie.csproj" -o ./sbom -j
+
+      - name: Uploader le SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: SBOM
+          path: ./sbom/bom.json
+
       - name: Générer l'attestation SLSA
         uses: actions/attest-build-provenance@v2
         with:
